@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 SPACEMAN PLAYER</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body { font-family: 'Press Start 2P', sans-serif; background:#0a0a1f; color:white; text-align:center; margin:0; padding:10px; }
+        .container { max-width:650px; margin:auto; background:#1a1a2e; padding:15px; border:4px solid #22d3ee; border-radius:15px; }
+        button { width:100%; padding:15px; margin:8px 0; font-size:16px; border:none; border-radius:50px; cursor:pointer; font-family:inherit; }
+        .btn-blue { background:#22d3ee; color:black; }
+        .btn-green { background:#22c55e; color:black; }
+        .btn-red { background:#ef4444; color:white; }
+        .btn-yellow { background:#facc15; color:black; }
+        input { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; }
+        #multiplier { font-size:52px; margin:20px 0; color:#22d3ee; text-shadow: 0 0 10px #22d3ee; }
+        select { width:94%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; }
+        .status-box { background: #252542; padding: 10px; border-radius: 8px; font-size: 12px; margin: 10px 0; color: #a5b4fc; line-height: 1.5; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚀 SPACEMAN</h1>
+    
+    <div id="authPage">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()" class="btn-blue">LOGIN</button>
+        <button onclick="register()" class="btn-green">DAFTAR</button>
+    </div>
+
+    <div id="gamePage" style="display:none;">
+        <p>User: <b id="currUser"></b></p>
+        <p>Saldo: <span id="saldo" style="color:#22d3ee;">Rp 0</span></p>
+        
+        <button onclick="refreshSaldo()" class="btn-green">🔄 REFRESH SALDO</button>
+        <button onclick="showWithdrawForm()" class="btn-red">💸 TARIK SALDO</button>
+        <button onclick="topUp()" class="btn-yellow">💰 TOP UP</button>
+
+        <div class="status-box" id="gameStatus">⏱️ Menunggu Admin Memulai Game...</div>
+
+        <input type="number" id="taruhan" value="5000" style="width:90%;">
+        <button id="startBtn" onclick="pasangTaruhan()" class="btn-blue">BET / PASANG TARUHAN</button>
+        <button id="cashoutBtn" onclick="cashOut()" style="display:none;background:#facc15;color:black;" class="btn-yellow">💰 CASH OUT</button>
+
+        <h2 id="multiplier">1.00x</h2>
+    </div>
+
+    <div id="withdrawForm" style="display:none;margin-top:20px;">
+        <h3>💸 Tarik Saldo</h3>
+        <input type="number" id="withdrawAmount" placeholder="Jumlah">
+        <select id="ewalletType">
+            <option value="Dana">Dana</option>
+            <option value="OVO">OVO</option>
+            <option value="GoPay">GoPay</option>
+        </select>
+        <input type="text" id="ewalletNumber" placeholder="Nomor E-Wallet">
+        <button onclick="submitWithdraw()" class="btn-red">KIRIM</button>
+        <button onclick="hideWithdrawForm()" style="background:#64748b;">BATAL</button>
+    </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAPi37cKRHWEyw0BMaUifdhS_bukrviir",
+  authDomain: "spaceman187.firebaseapp.com",
+  projectId: "spaceman187",
+  storageBucket: "spaceman187.firebasestorage.app",
+  messagingSenderId: "691135287021",
+  appId: "1:691135287021:web:5d91879dddf379972006"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let currentUser = null;
+let currentSaldo = 0;
+let betAmount = 0;
+let sudahTaruhan = false;
+let gameStatusAktif = "WAITING";
+let currentLiveMultiplier = 1.00;
+
+async function register() {
+    const user = document.getElementById('username').value.trim().toLowerCase();
+    const pass = document.getElementById('password').value.trim();
+    if (!user || !pass) return alert("Isi username & password!");
+    await db.collection("users").doc(user).set({password: pass, saldo: 0});
+    alert("✅ Akun berhasil dibuat!");
+}
+
+async function login() {
+    const user = document.getElementById('username').value.trim().toLowerCase();
+    const pass = document.getElementById('password').value.trim();
+    const doc = await db.collection("users").doc(user).get();
+    if (doc.exists && doc.data().password === pass) {
+        currentUser = user;
+        document.getElementById('authPage').style.display = 'none';
+        document.getElementById('gamePage').style.display = 'block';
+        document.getElementById('currUser').textContent = user;
+        
+        await updateSaldoBiasa();
+        listenToAdminGame(); 
+    } else {
+        alert("❌ Username atau password salah!");
+    }
+}
+
+async function updateSaldoBiasa() {
+    if (!currentUser) return;
+    const doc = await db.collection("users").doc(currentUser).get();
+    if (doc.exists) {
+        currentSaldo = doc.data().saldo || 0;
+        document.getElementById('saldo').textContent = `Rp ${currentSaldo.toLocaleString('id-ID')}`;
+    }
+}
+
+async function refreshSaldo() { 
+    await updateSaldoBiasa(); 
+    alert("✅ Saldo berhasil di-refresh!"); 
+}
+
+function listenToAdminGame() {
+    db.collection("game_room").doc("live_match").onSnapshot((doc) => {
+        if (!doc.exists) return;
+        
+        const data = doc.data();
+        gameStatusAktif = data.status || "WAITING";
+        currentLiveMultiplier = data.currentMultiplier || 1.00;
+        
+        document.getElementById('multiplier').textContent = currentLiveMultiplier.toFixed(2) + "x";
+
+        if (gameStatusAktif === "TERBANG") {
+            document.getElementById('gameStatus').textContent = "🚀 SPACEMAN SEDANG TERBANG!";
+            document.getElementById('gameStatus').style.color = "#22d3ee";
+            document.getElementById('startBtn').disabled = true;
+            
+            if (sudahTaruhan) {
+                document.getElementById('cashoutBtn').style.display = 'inline-block';
+            }
+        } 
+        else if (gameStatusAktif === "CRASH") {
+            document.getElementById('gameStatus').textContent = `💥 CRASHED DI ${currentLiveMultiplier.toFixed(2)}x!`;
+            document.getElementById('gameStatus').style.color = "#ef4444";
+            document.getElementById('cashoutBtn').style.display = 'none';
+            document.getElementById('startBtn').disabled = false;
+            sudahTaruhan = false; 
+            updateSaldoBiasa();
+        } 
+        else {
+            document.getElementById('gameStatus').textContent = "⏱️ Menunggu Admin Memulai Game...";
+            document.getElementById('gameStatus').style.color = "#facc15";
+            document.getElementById('cashoutBtn').style.display = 'none';
+            document.getElementById('startBtn').disabled = false;
+        }
+    });
+}
+
+async function pasangTaruhan() {
+    if (!currentUser) return;
+    if (gameStatusAktif === "TERBANG") return alert("Game sudah jalan! Tunggu ronde berikutnya.");
+    if (sudahTaruhan) return alert("Kamu sudah pasang taruhan untuk ronde ini!");
+
+    const bet = parseInt(document.getElementById('taruhan').value);
+    if (bet < 1000) return alert("Minimal taruhan Rp 1.000!");
+    if (bet > currentSaldo) return alert("Saldo tidak cukup!");
+
+    await db.collection("users").doc(currentUser).update({
+        saldo: firebase.firestore.FieldValue.increment(-bet)
+    });
+
+    betAmount = bet;
+    sudahTaruhan = true;
+    currentSaldo -= bet; 
+    document.getElementById('saldo').textContent = `Rp ${currentSaldo.toLocaleString('id-ID')}`;
+    
+    document.getElementById('gameStatus').textContent = "✅ Taruhan dipasang! Menunggu admin menerbangkan roket...";
+    document.getElementById('gameStatus').style.color = "#22c55e";
+}
+
+async function cashOut() {
+    if (!sudahTaruhan) return;
+    sudahTaruhan = false; 
+    document.getElementById('cashoutBtn').style.display = 'none';
+
+    const win = Math.floor(betAmount * currentLiveMultiplier);
+    
+    await db.collection("users").doc(currentUser).update({
+        saldo: firebase.firestore.FieldValue.increment(win)
+    });
+    
+    alert(`🎉 CASH OUT BERHASIL! ${currentLiveMultiplier.toFixed(2)}x → Rp ${win.toLocaleString('id-ID')}`);
+    await updateSaldoBiasa(); 
+}
+
+function showWithdrawForm() { document.getElementById('withdrawForm').style.display = 'block'; }
+function hideWithdrawForm() { document.getElementById('withdrawForm').style.display = 'none'; }
+function submitWithdraw() { alert("Permintaan penarikan dikirim ke Admin!"); hideWithdrawForm(); }
+function topUp() { window.open('https://sociabuzz.com/bolapredik/tribe', '_blank'); }
+</script>
+</body>
+</html>
