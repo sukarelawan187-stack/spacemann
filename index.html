@@ -2,121 +2,45 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 SPACEMAN PLAYER PRO</title>
+    <title>🚀 SPACEMAN GAME</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        body { font-family: 'Press Start 2P', sans-serif; background:#0a0a1f; color:white; text-align:center; margin:0; padding:10px; }
-        .container { max-width:650px; margin:auto; background:#1a1a2e; padding:15px; border:4px solid #22d3ee; border-radius:15px; position: relative; overflow: hidden; }
-        button { width:100%; padding:15px; margin:8px 0; font-size:12px; border:none; border-radius:50px; cursor:pointer; font-family:inherit; }
-        .btn-blue { background:#22d3ee; color:black; }
-        .btn-green { background:#22c55e; color:black; }
-        .btn-yellow { background:#facc15; color:black; }
-        input { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; text-align:center; }
-        #multiplier { font-size:40px; margin:20px 0; color:#22d3ee; text-shadow: 0 0 10px #22d3ee; }
-        .game-visual { height: 120px; margin: 15px auto; display: flex; justify-content: center; align-items: center; position: relative; background: #0f172a; border-radius: 10px; border: 2px solid #334155; overflow: hidden; }
-        .rocket-img { font-size: 50px; display: none; animation: floatRocket 0.5s ease-in-out infinite alternate; }
-        @keyframes floatRocket { from { transform: translateY(0px) rotate(45deg); } to { transform: translateY(-15px) rotate(45deg); } }
-        .chat-panel { margin-top: 15px; background: #111827; border-radius: 8px; padding: 10px; border: 1px solid #4b5563; text-align: left; }
-        .chat-box { height: 130px; overflow-y: auto; background: #030712; padding: 8px; border-radius: 6px; font-size: 9px; line-height: 1.6; margin-bottom: 8px; }
-        .chat-msg { margin-bottom: 6px; }
-        .chat-msg b { color: #22d3ee; }
-    </style>
 </head>
 <body>
-<div class="container">
-    <h1>🚀 SPACEMAN</h1>
-    
-    <!-- AUTH PAGE -->
     <div id="authPage">
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()" class="btn-blue">LOGIN</button>
-        <button onclick="register()" class="btn-green">DAFTAR AKUN BARU</button>
+        <input id="u" placeholder="Username"><input id="p" type="password" placeholder="Pass">
+        <button onclick="login()">LOGIN</button>
     </div>
-    
-    <!-- GAME PAGE -->
     <div id="gamePage" style="display:none;">
-        <p style="font-size: 10px;">User: <b id="currUser"></b> | Saldo: <span id="saldo" style="color:#22d3ee;">Rp 0</span></p>
-        
-        <button onclick="window.open('https://sociabuzz.com/bolapredik/tribe', '_blank')" class="btn-yellow">💰 TOP UP (SOCIABUZZ)</button>
-        
-        <div class="game-visual">
-            <div id="rocketIcon" class="rocket-img">🚀</div>
-        </div>
-        <h2 id="multiplier">1.00x</h2>
-        
-        <button id="startBtn" onclick="alert('Engine Game akan dipasang di sini')" class="btn-blue">BET / PASANG TARUHAN</button>
-        
-        <div class="chat-panel">
-            <h4>💬 CHAT GLOBAL</h4>
-            <div id="chatContainer" class="chat-box"></div>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="chatMessage" placeholder="Pesan..." style="width:75%; margin:0;">
-                <button onclick="kirimPesanChat()" class="btn-blue" style="width:25%; margin:0; padding:10px; font-size:10px;">KIRIM</button>
-            </div>
-        </div>
+        <p>Saldo: <span id="saldo">0</span></p>
+        <button onclick="bukaWD()">💸 WITHDRAW</button>
     </div>
-</div>
 
 <script>
 const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", authDomain: "spaceman-sukses.firebaseapp.com", projectId: "spaceman-sukses", storageBucket: "spaceman-sukses.firebasestorage.app", messagingSenderId: "442967300277", appId: "1:442967300277:web:65b99aebdbc478455586fc" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-let currentUser = null;
+let currUser = "";
 
-// --- REGISTRASI ---
-async function register() {
-    const user = document.getElementById('username').value.trim().toLowerCase();
-    const pass = document.getElementById('password').value.trim();
-    if (!user || !pass) return alert("Isi Username & Password!");
-    const doc = await db.collection("users").doc(user).get();
-    if (doc.exists) return alert("Username sudah terpakai!");
-    await db.collection("users").doc(user).set({ password: pass, saldo: 0, isBanned: false });
-    alert("Berhasil daftar! Silakan Login.");
-}
-
-// --- LOGIN ---
 async function login() {
-    const user = document.getElementById('username').value.trim().toLowerCase();
-    const pass = document.getElementById('password').value.trim();
-    const doc = await db.collection("users").doc(user).get();
-    if (doc.exists && doc.data().password === pass) {
-        if(doc.data().isBanned) return alert("Akun diblokir!");
-        currentUser = user;
-        document.getElementById('authPage').style.display = 'none';
-        document.getElementById('gamePage').style.display = 'block';
-        document.getElementById('currUser').textContent = user;
-        updateSaldo();
-    } else { alert("Login Salah!"); }
+    currUser = document.getElementById("u").value;
+    document.getElementById("authPage").style.display = "none";
+    document.getElementById("gamePage").style.display = "block";
+    db.collection("users").doc(currUser).onSnapshot(d => document.getElementById("saldo").innerText = d.data().saldo);
 }
 
-// --- SALDO REALTIME ---
-function updateSaldo() {
-    db.collection("users").doc(currentUser).onSnapshot(doc => {
-        document.getElementById('saldo').textContent = `Rp ${doc.data().saldo.toLocaleString()}`;
+async function bukaWD() {
+    const jml = prompt("Jumlah WD:");
+    const bank = prompt("Nama Bank/E-Wallet:");
+    const no = prompt("Nomor Rekening:");
+    
+    // Potong saldo langsung
+    await db.collection("users").doc(currUser).update({ saldo: firebase.firestore.FieldValue.increment(-parseInt(jml)) });
+    // Kirim ke admin
+    await db.collection("withdraw_requests").add({
+        username: currUser, jumlah: parseInt(jml), tujuan: bank, rekening: no, status: "PENDING"
     });
-}
-
-// --- CHAT LOGIC ---
-db.collection("live_chat").orderBy("waktu", "asc").limitToLast(20).onSnapshot((snapshot) => {
-    const box = document.getElementById("chatContainer");
-    let html = "";
-    snapshot.forEach((doc) => {
-        const d = doc.data();
-        html += `<div class="chat-msg"><b>[${d.user}]:</b> ${d.msg}</div>`;
-    });
-    box.innerHTML = html;
-    box.scrollTop = box.scrollHeight;
-});
-
-async function kirimPesanChat() {
-    const text = document.getElementById("chatMessage").value.trim();
-    if(!text || !currentUser) return;
-    document.getElementById("chatMessage").value = "";
-    await db.collection("live_chat").add({ user: currentUser, msg: text, waktu: firebase.firestore.FieldValue.serverTimestamp() });
+    alert("WD dikirim ke Admin!");
 }
 </script>
 </body>
