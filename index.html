@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN & DAFTAR</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #020617; color: white; text-align: center; font-family: sans-serif; padding: 20px; }
+        .box { background: #0f172a; padding: 25px; border-radius: 10px; max-width: 350px; margin: auto; border: 2px solid #facc15; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white; }
+        button { width: 95%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; background: #22c55e; color: black; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>LOGIN / DAFTAR</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="prosesLogin()">MASUK / DAFTAR</button>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", projectId: "spaceman-sukses" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function prosesLogin() {
+            const user = document.getElementById("username").value.trim().toLowerCase();
+            const pass = document.getElementById("password").value.trim();
+            if (!user || !pass) return alert("Isi Username dan Password!");
+
+            const userRef = db.collection("users").doc(user);
+            const doc = await userRef.get();
+
+            if (!doc.exists) {
+                // Jika user baru, otomatis daftar
+                await userRef.set({ password: pass, saldo: 0, status: "ONLINE" });
+                alert("Akun baru dibuat!");
+            } else {
+                // Jika user sudah ada, cek password
+                if (doc.data().password !== pass) return alert("Password salah!");
+            }
+
+            localStorage.setItem("game_username", user);
+            window.location.href = "spaceman.html";
+        }
+    </script>
+</body>
+</html>
