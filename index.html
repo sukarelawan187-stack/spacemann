@@ -7,7 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap');
         body { font-family: 'Chakra Petch', sans-serif; background: #020617; color: white; text-align: center; margin: 0; padding: 20px; }
         .container { max-width: 400px; margin: auto; background: #0f172a; padding: 25px; border-radius: 15px; border: 3px solid #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.3); }
         .menu-box { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
@@ -17,72 +17,60 @@
         .btn-chat { background: #22c55e; color: black; }
         .btn-logout { background: #ef4444; color: white; padding: 8px; font-size: 12px; margin-top: 15px; }
         .info-panel { background: #1e293b; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>🎯 PORTAL GAME PORTABLE</h2>
-    
+    <h2>🎯 PORTAL GAME</h2>
     <div class="info-panel">
         👤 ID: <b id="lblUser" style="color:#38bdf8;">-</b><br>
         💰 Saldo: <b id="lblSaldo" style="color:#22c55e;">Rp 0</b>
-        <div class="grid-2">
-            <button onclick="bukaFormWD()" style="padding:6px; font-size:11px; background:#e2e8f0; color:black;">📥 WITHDRAW (WD)</button>
-        </div>
+        <button onclick="bukaFormWD()" style="padding:6px; margin-top:10px; font-size:11px; background:#e2e8f0; color:black;">📥 WITHDRAW (WD)</button>
     </div>
 
     <div class="menu-box">
         <button onclick="window.location.href='spaceman.html'" class="btn-space">🚀 MAIN SPACEMAN</button>
-        <button onclick="window.location.href='mahjong.html'" class="btn-mahjong">🀄 MAIN MAHJONG WAYS 2</button>
-        <button onclick="window.location.href='chat.html'" class="btn-chat">💬 HUBUNGI ADMIN (LIVE CHAT)</button>
+        <button onclick="window.location.href='mahjong.html'" class="btn-mahjong">🀄 MAIN MAHJONG</button>
+        <button onclick="window.location.href='chat.html'" class="btn-chat">💬 HUBUNGI ADMIN</button>
     </div>
-
     <button onclick="prosesLogout()" class="btn-logout">🚪 KELUAR AKUN</button>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
-  authDomain: "spaceman-sukses.firebaseapp.com",
-  projectId: "spaceman-sukses",
-  storageBucket: "spaceman-sukses.firebasestorage.app",
-  messagingSenderId: "442967300277",
-  appId: "1:442967300277:web:65b99aebdbc478455586fc"
-};
+const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", projectId: "spaceman-sukses" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const sessionUser = localStorage.getItem("game_user");
+// PENTING: Gunakan 'game_username' agar sinkron dengan file lain
+const sessionUser = localStorage.getItem("game_username"); 
+
 if(!sessionUser) {
-    window.location.href = "mahjong.html"; // Jika belum login otomatis diarahkan ke form login awal
+    window.location.href = "login.html"; // Arahkan ke file login jika belum login
 } else {
     document.getElementById("lblUser").textContent = sessionUser;
     db.collection("users").doc(sessionUser).onSnapshot((doc) => {
         if(doc.exists) {
             document.getElementById("lblSaldo").textContent = "Rp " + (doc.data().saldo || 0).toLocaleString();
-            if(doc.data().isBanned === true) { alert("Akun diblokir!"); prosesLogout(); }
         }
     });
 }
 
-function prosesLogout() { localStorage.clear(); window.location.reload(); }
+function prosesLogout() { localStorage.clear(); window.location.href = "login.html"; }
 
 async function bukaFormWD() {
     const jml = parseInt(prompt("Masukkan Jumlah WD (Rp):"));
-    const bank = prompt("Nama Bank / E-Wallet (DANA/OVO/BCA):");
-    const rek = prompt("Nomor Rekening / Nomor HP:");
+    const bank = prompt("Nama Bank / E-Wallet:");
+    const rek = prompt("Nomor Rekening / HP:");
     if(!jml || !bank || !rek) return alert("Data harus lengkap!");
     
-    // Cek kecukupan saldo sebelum kirim request
     const snap = await db.collection("users").doc(sessionUser).get();
     if(snap.exists && (snap.data().saldo || 0) >= jml) {
         await db.collection("users").doc(sessionUser).update({ saldo: firebase.firestore.FieldValue.increment(-jml) });
         await db.collection("withdraw_requests").add({
             username: sessionUser, jumlah: jml, tujuan: bank, rekening: rek, status: "PENDING", waktu: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert("📥 Request WD Berhasil Dikirim! Menunggu persetujuan admin.");
-    } else { alert("❌ Saldo Anda Tidak Cukup!"); }
+        alert("📥 Request WD Berhasil!");
+    } else { alert("❌ Saldo tidak cukup!"); }
 }
 </script>
 </body>
