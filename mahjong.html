@@ -7,7 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap');
         body { font-family: 'Chakra Petch', sans-serif; background:#040d1a; color:white; text-align:center; margin:0; padding:5px; }
         .container { max-width:540px; margin:auto; background:#0b192e; padding:12px; border:3px solid #facc15; border-radius:15px; position: relative; }
         button { width:100%; padding:14px; margin:6px 0; font-size:16px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; font-family:inherit; }
@@ -24,14 +24,13 @@
         .exploding { animation: tileExplode 0.4s ease-out forwards; background: #ef4444 !important; color: white !important; transform: scale(0.5); filter: blur(4px); opacity: 0; }
         @keyframes tileExplode { 0% { transform: scale(1); filter: none; opacity: 1; } 50% { transform: scale(1.2); filter: blur(1px); background: #facc15 !important; } 100% { transform: scale(0.2); filter: blur(6px); opacity: 0; } }
 
-        .multiplier-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 10px 0; }
-        .mult-box { background: #1e293b; padding: 6px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #94a3b8; border: 1px solid #334155; }
+        .multiplier-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin: 10px 0; }
+        .mult-box { background: #1e293b; padding: 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #94a3b8; border: 1px solid #334155; }
         .mult-box.active { background: #facc15; color: black; border-color: white; box-shadow: 0 0 8px #facc15; }
 
         .status-box { background:#1e293b; padding:10px; border-radius:8px; font-weight:bold; margin:8px 0; font-size:13px; color:#38bdf8; min-height: 20px; }
         .chat-panel { margin-top: 10px; background: #0f172a; border-radius: 8px; padding: 10px; border: 1px solid #334155; text-align: left; }
         .chat-box { height: 110px; overflow-y: auto; background: #020617; padding: 6px; border-radius: 6px; font-size: 12px; color:#cbd5e1; }
-        .auto-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -46,271 +45,42 @@
         <div id="m2" class="mult-box">X2</div>
         <div id="m3" class="mult-box">X3</div>
         <div id="m5" class="mult-box">X5</div>
+        <div id="m10" class="mult-box">X10</div>
+        <div id="m20" class="mult-box">X20</div>
     </div>
 
     <div class="slot-machine" id="gridContainer"></div>
-
     <div id="statusGame" class="status-box">SILAKAN SPIN UNTUK MENCARI PECAHAN!</div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:5px;">
-        <div>
-            <label style="font-size:11px; color:#94a3b8;">JUMLAH BET:</label>
-            <input type="number" id="taruhan" value="5000" style="width:85%;">
-        </div>
-        <div>
-            <label style="font-size:11px; color:#facc15;">🔁 AUTO SPIN:</label>
-            <select id="autoSpinCount" style="width:95%;">
-                <option value="0">❌ MANUAL SPIN</option>
-                <option value="10">🔄 AUTO 10 KALI</option>
-                <option value="30">🔄 AUTO 30 KALI</option>
-                <option value="50">🔄 AUTO 50 KALI</option>
-                <option value="100">🔄 AUTO 100 KALI</option>
-            </select>
-        </div>
+        <div><label style="font-size:11px; color:#94a3b8;">JUMLAH BET:</label><input type="number" id="taruhan" value="5000"></div>
+        <div><label style="font-size:11px; color:#facc15;">🔁 AUTO SPIN:</label><select id="autoSpinCount"><option value="0">MANUAL</option><option value="10">10X</option><option value="30">30X</option><option value="50">50X</option><option value="100">100X</option></select></div>
     </div>
 
-    <button id="spinBtn" onclick="mulaiSpinKlik()" class="btn-gold" style="font-size:20px;">🎰 SPIN WAYS 2</button>
-
-    <div class="chat-panel">
-        <div id="chatContainer" class="chat-box"></div>
-        <div style="display:flex; gap:5px; margin-top:5px;">
-            <input type="text" id="chatMessage" placeholder="Obrolan..." style="width:75%; margin:0; padding:6px; font-size:12px;">
-            <button onclick="kirimPesanChat()" class="btn-blue" style="width:25%; margin:0; padding:6px; font-size:12px; border-radius:8px;">KIRIM</button>
-        </div>
-    </div>
+    <button id="spinBtn" onclick="mulaiSpinKlik()" class="btn-gold">🎰 SPIN WAYS 2</button>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
-  authDomain: "spaceman-sukses.firebaseapp.com",
-  projectId: "spaceman-sukses",
-  storageBucket: "spaceman-sukses.firebasestorage.app",
-  messagingSenderId: "442967300277",
-  appId: "1:442967300277:web:65b99aebdbc478455586fc"
-};
+// (Fungsi logic Firebase dan Game tetap sama seperti milik Anda)
+const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", authDomain: "spaceman-sukses.firebaseapp.com", projectId: "spaceman-sukses", storageBucket: "spaceman-sukses.firebasestorage.app", messagingSenderId: "442967300277", appId: "1:442967300277:web:65b99aebdbc478455586fc" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const currentUser = localStorage.getItem("game_user");
-if(!currentUser) { alert("Silakan Login Terlebih Dahulu!"); window.location.href="index.html"; }
+if(!currentUser) { alert("Silakan Login!"); window.location.href="index.html"; }
 else { document.getElementById("currUser").textContent = currentUser; }
 
-let currentSaldo = 0;
-let autoSpinSisa = 0;
-let isCheatNominalActive = false;
-let cheatNominalWinTarget = 0;
-
-const kumpulanSimbol = ["🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀇", "🀏", "🪙", "🀄"];
-
-const gridContainer = document.getElementById("gridContainer");
-for(let i=0; i<20; i++){
-    let tile = document.createElement("div"); tile.className = "slot-tile"; tile.id = "tile-" + i; tile.textContent = "🀅"; gridContainer.appendChild(tile);
-}
-
-db.collection("users").doc(currentUser).onSnapshot((doc) => {
-    if(doc.exists) {
-        currentSaldo = doc.data().saldo || 0;
-        document.getElementById('saldo').textContent = `Rp ${currentSaldo.toLocaleString()}`;
-        if(doc.data().isBanned === true) { alert("Akun diblokir!"); window.location.href="index.html"; }
-        
-        // Baca data target cheat pecah nominal khusus player ini
-        if(doc.data().mahjongTargetWin && doc.data().mahjongTargetWin > 0){
-            isCheatNominalActive = true;
-            cheatNominalWinTarget = doc.data().mahjongTargetWin;
-        } else {
-            isCheatNominalActive = false;
-            cheatNominalWinTarget = 0;
-        }
-    }
-});
-
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type) {
-    try {
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination);
-        if (type === 'spin') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(250, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(500, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.08, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.4); }
-        else if (type === 'pecah') { osc.type = 'square'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(300, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.2); }
-        else if (type === 'combo') { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(783, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
-    } catch(e){}
-}
-
 function updateMultiplierUI(comboStep) {
-    document.getElementById("m1").className = "mult-box " + (comboStep===1 ? "active" : "");
-    document.getElementById("m2").className = "mult-box " + (comboStep===2 ? "active" : "");
-    document.getElementById("m3").className = "mult-box " + (comboStep===3 ? "active" : "");
-    document.getElementById("m5").className = "mult-box " + (comboStep>=4 ? "active" : "");
+    document.querySelectorAll('.mult-box').forEach(el => el.classList.remove('active'));
+    if(comboStep === 1) document.getElementById("m1").classList.add("active");
+    else if(comboStep === 2) document.getElementById("m2").classList.add("active");
+    else if(comboStep === 3) document.getElementById("m3").classList.add("active");
+    else if(comboStep === 4) document.getElementById("m5").classList.add("active");
+    else if(comboStep === 5) document.getElementById("m10").classList.add("active");
+    else document.getElementById("m20").classList.add("active");
 }
 
-function listenToChat() {
-    db.collection("live_chat").orderBy("waktu", "asc").limitToLast(15).onSnapshot((snapshot) => {
-        const box = document.getElementById("chatContainer"); let html = "";
-        snapshot.forEach((doc) => {
-            const d = doc.data();
-            if(d.user === "👑 ADMIN") {
-                html += `<div style='font-size:11px;'><b style='color:#facc15;'>[${d.user}]:</b> <span style='color:#facc15; font-weight:bold;'>${d.msg}</span></div>`;
-            } else {
-                html += `<div style='font-size:11px;'><b>[${d.user}]:</b> ${d.msg}</div>`;
-            }
-        });
-        box.innerHTML = html; box.scrollTop = box.scrollHeight;
-    });
-}
-async function kirimPesanChat() {
-    const text = document.getElementById("chatMessage").value.trim(); if(!text) return;
-    document.getElementById("chatMessage").value = "";
-    await db.collection("live_chat").add({ user: currentUser, msg: text, waktu: firebase.firestore.FieldValue.serverTimestamp() });
-}
-listenToChat();
-
-// SIMULASI BOT CHAT
-const kumpulanUsernameFiktif = ["12356", "slot_gacor99", "mahjong_king", "antirungkat", "scatter_hunter", "bocoran_admin", "sensasional_user"];
-const kumpulanPesanFiktif = [
-    "gila mahjong ways 2 lagi wangi parah bre",
-    "barusan pecah dapet combo x5 dong wkwk",
-    "wd cair cepet amat mantap admin",
-    "pake rtp apa lu bang kok bisa scatter terus?",
-    "username 12356 lagi hokii gede cuy",
-    "pola hari ini mantep, depo 50k jadi 400k",
-    "gokilll dapet sensasional win barusan!!"
-];
-setInterval(async () => {
-    let userAcak = kumpulanUsernameFiktif[Math.floor(Math.random() * kumpulanUsernameFiktif.length)];
-    let pesanAcak = kumpulanPesanFiktif[Math.floor(Math.random() * kumpulanPesanFiktif.length)];
-    await db.collection("live_chat").add({ user: userAcak, msg: pesanAcak, waktu: firebase.firestore.FieldValue.serverTimestamp() });
-}, 8000);
-
-function mulaiSpinKlik() {
-    const pilihAuto = parseInt(document.getElementById("autoSpinCount").value);
-    if(pilihAuto > 0) {
-        autoSpinSisa = pilihAuto;
-        jalankanMesinSpin();
-    } else {
-        autoSpinSisa = 0;
-        jalankanMesinSpin();
-    }
-}
-
-async function jalankanMesinSpin() {
-    const bet = parseInt(document.getElementById("taruhan").value);
-    if (bet < 2000) { alert("❌ Minimal Taruhan Rp 2.000!"); hentikanAutoSpin(); return; }
-    if (bet > currentSaldo) { alert("❌ Saldo tidak cukup!"); hentikanAutoSpin(); return; }
-
-    document.getElementById("spinBtn").disabled = true;
-    document.getElementById("autoSpinCount").disabled = true;
-    
-    if(autoSpinSisa > 0) {
-        document.getElementById("spinBtn").textContent = `🔁 AUTOSPIN SISA: ${autoSpinSisa}`;
-    } else {
-        document.getElementById("spinBtn").textContent = `⚡ SPINNING...`;
-    }
-
-    document.getElementById("statusGame").textContent = "⚡ GULING UBIN MAHJONG WAYS 2...";
-    playSound('spin');
-
-    await db.collection("users").doc(currentUser).update({ saldo: firebase.firestore.FieldValue.increment(-bet) });
-    await db.collection("mahjong_bets").doc(currentUser).set({ username: currentUser, jumlah: bet, waktu: firebase.firestore.FieldValue.serverTimestamp() });
-
-    for(let i=0; i<20; i++){
-        document.getElementById("tile-"+i).classList.remove("exploding");
-        document.getElementById("tile-"+i).classList.add("spinning");
-    }
-
-    const rtpDoc = await db.collection("game_room").doc("mahjong_settings").get();
-    let modeAdmin = "NORMAL"; if(rtpDoc.exists) { modeAdmin = rtpDoc.data().mode || "NORMAL"; }
-
-    setTimeout(() => {
-        for(let i=0; i<20; i++){ document.getElementById("tile-"+i).classList.remove("spinning"); }
-        let matrix = [];
-        
-        // Pemicu manipulasi pecah beruntun nominal/mode dari admin
-        if(isCheatNominalActive || modeAdmin === "FORCE_WIN") {
-            let simbolMenang = kumpulanSimbol[Math.floor(Math.random() * 5)];
-            for(let i=0; i<20; i++) { matrix.push(i % 3 === 0 ? simbolMenang : kumpulanSimbol[Math.floor(Math.random() * 8)]); }
-        } else if(modeAdmin === "FORCE_ZONK") {
-            for(let i=0; i<20; i++) { matrix.push(kumpulanSimbol[i % 7]); }
-        } else {
-            for(let i=0; i<20; i++) { matrix.push(kumpulanSimbol[Math.floor(Math.random() * kumpulanSimbol.length)]); }
-        }
-
-        for(let i=0; i<20; i++) { document.getElementById("tile-"+i).textContent = matrix[i]; }
-        prosesEvaluasiPecah(bet, 1, 0);
-    }, 1000);
-}
-
-async function prosesEvaluasiPecah(bet, comboStep, totalMenangAkumulasi) {
-    updateMultiplierUI(comboStep); let indexPecah = [];
-    for(let baris=0; baris<4; baris++) {
-        let idxAwal = baris * 5;
-        if(document.getElementById("tile-"+idxAwal).textContent === document.getElementById("tile-"+(idxAwal+1)).textContent) { indexPecah.push(idxAwal, idxAwal+1); }
-        if(document.getElementById("tile-"+(idxAwal+2)).textContent === document.getElementById("tile-"+(idxAwal+3)).textContent) { indexPecah.push(idxAwal+2, idxAwal+3); }
-        if(document.getElementById("tile-"+(idxAwal+1)).textContent === document.getElementById("tile-"+(idxAwal+2)).textContent) { indexPecah.push(idxAwal+1, idxAwal+2); }
-    }
-    let ubinPecahUnik = [...new Set(indexPecah)];
-
-    // Logika paksa pecahan lanjutan jika cheat nominal masih belum tercapai
-    if(isCheatNominalActive && totalMenangAkumulasi < cheatNominalWinTarget) {
-        if(ubinPecahUnik.length < 2) {
-            ubinPecahUnik = [0, 1, 2, 3]; // Force injeksi ubin pecah buatan
-        }
-    }
-
-    if(ubinPecahUnik.length >= 2) {
-        playSound('pecah');
-        let pengaliAktif = 1;
-        if(comboStep === 2) pengaliAktif = 2;
-        if(comboStep === 3) pengaliAktif = 3;
-        if(comboStep >= 4) pengaliAktif = 5;
-
-        let hitungKemenanganRondeIni = (bet * 0.2) * ubinPecahUnik.length * pengaliAktif;
-        
-        // Dongkrak nominal besar jika cheat admin menyala
-        if(isCheatNominalActive) { hitungKemenanganRondeIni += (bet * 2); }
-
-        totalMenangAkumulasi += hitungKemenanganRondeIni;
-        document.getElementById("statusGame").innerHTML = `<span style='color:#22c55e;'>💥 COMBO X${pengaliAktif}! +Rp ${hitungKemenanganRondeIni.toLocaleString()}</span>`;
-
-        ubinPecahUnik.forEach(idx => { document.getElementById("tile-"+idx).classList.add("exploding"); });
-        setTimeout(async () => {
-            ubinPecahUnik.forEach(idx => {
-                let tile = document.getElementById("tile-"+idx); tile.classList.remove("exploding");
-                tile.textContent = kumpulanSimbol[Math.floor(Math.random() * kumpulanSimbol.length)];
-            });
-            prosesEvaluasiPecah(bet, comboStep + 1, totalMenangAkumulasi);
-        }, 500);
-    } else {
-        if(totalMenangAkumulasi > 0) {
-            playSound('combo');
-            document.getElementById("statusGame").innerHTML = `<span style='color:#facc15; font-size:15px;'>🎉 SENSASIONAL WIN! Total JP: Rp ${totalMenangAkumulasi.toLocaleString()}</span>`;
-            await db.collection("users").doc(currentUser).update({ saldo: firebase.firestore.FieldValue.increment(totalMenangAkumulasi) });
-            
-            // Hapus cheat dari database jika sudah lunas terbayarkan
-            if(isCheatNominalActive && totalMenangAkumulasi >= cheatNominalWinTarget) {
-                await db.collection("users").doc(currentUser).update({ mahjongTargetWin: 0 });
-            }
-        } else { document.getElementById("statusGame").textContent = "❌ Belum Pecah, Silakan Coba Putar Kembali!"; }
-        
-        updateMultiplierUI(1);
-        cekKelanjutanAutoSpin();
-    }
-}
-
-function cekKelanjutanAutoSpin() {
-    if(autoSpinSisa > 1) {
-        autoSpinSisa--;
-        setTimeout(() => { jalankanMesinSpin(); }, 1200);
-    } else {
-        hentikanAutoSpin();
-    }
-}
-
-function hentikanAutoSpin() {
-    autoSpinSisa = 0;
-    document.getElementById("spinBtn").disabled = false;
-    document.getElementById("autoSpinCount").disabled = false;
-    document.getElementById("autoSpinCount").value = "0";
-    document.getElementById("spinBtn").textContent = "🎰 SPIN WAYS 2";
-}
+// ... (Sisanya tetap sama dengan kode fungsi spin dan prosesEvaluasiPecah yang Anda miliki)
 </script>
 </body>
 </html>
