@@ -2,81 +2,31 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 PANEL ADMIN SPACEMAN</title>
+    <title>👑 PANEL ADMIN</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        body { font-family: 'Press Start 2P', sans-serif; background:#0a0a1f; color:white; text-align:center; margin:0; padding:15px; }
-        .container { max-width:700px; margin:auto; background:#1a1a2e; padding:20px; border:4px solid #ef4444; border-radius:15px; }
-        button { width:100%; padding:15px; margin:10px 0; font-size:12px; border:none; border-radius:8px; cursor:pointer; font-family:inherit; }
-        .btn-green { background:#22c55e; color:black; }
-        .btn-red { background:#ef4444; color:white; }
-        .btn-blue { background:#22d3ee; color:black; }
-        .btn-orange { background:#f97316; color:white; }
-        input, select { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; text-align:center; }
-        .monitor-box { background: #282846; border: 2px dashed #facc15; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 11px; }
-        .chat-list { text-align: left; background: #000; padding: 10px; border-radius: 8px; height: 150px; overflow-y: auto; font-size: 10px; margin-bottom: 10px; }
-        .live-mult { font-size: 40px; color: #facc15; margin: 15px 0; }
-        .wd-box { background:#1e1e38; border:2px solid #ef4444; padding:10px; margin:10px 0; border-radius:8px; font-size:10px; text-align:left; }
-        .online-list { text-align: left; background: #111827; padding: 10px; border-radius: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; border-left: 4px solid #22c55e; }
-        .bet-list { text-align: left; background: #0f172a; padding: 10px; border-radius: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; border-left: 4px solid #22d3ee; color: #22d3ee; }
+        body { background:#0a0a1f; color:white; font-family:sans-serif; padding:20px; }
+        .container { max-width:600px; margin:auto; background:#1a1a2e; padding:20px; border-radius:15px; }
+        .box { background:#282846; padding:15px; margin:10px 0; border-radius:8px; }
+        button { padding:10px; cursor:pointer; }
+        .btn-green { background:#22c55e; color:white; border:none; }
+        .btn-red { background:#ef4444; color:white; border:none; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>👑 PANEL ADMIN</h1>
-
-    <!-- CHAT DASHBOARD -->
-    <div class="monitor-box" style="border-color: #f59e0b;">
-        <h3>💬 CHAT PEMAIN</h3>
-        <div id="chatAdminList" class="chat-list">Memuat chat...</div>
-        <input type="text" id="replyChat" placeholder="Balas pesan...">
-        <button onclick="balasChat()" class="btn-green">KIRIM BALASAN</button>
-    </div>
-    
-    <!-- FITUR LAINNYA -->
-    <div class="monitor-box" style="border-color: #22c55e;">
-        <h3>🟢 PEMAIN ONLINE</h3>
-        <div id="onlineUsersList" class="online-list">Memuat...</div>
-    </div>
-
-    <div class="monitor-box" style="border-color: #ec4899;">
-        <h3>🚫 SANKSI PLAYER</h3>
-        <input type="text" id="bannedTargetUser" placeholder="Username">
-        <button onclick="prosesBanned('BAN')" class="btn-red">🚫 BLOKIR</button>
-        <button onclick="prosesBanned('UNBAN')" class="btn-green">✅ LEPAS BLOKIR</button>
-    </div>
-
-    <div class="monitor-box" style="border-color: #facc15;">
-        <h3>🛡️ ANTI-BOCOR (RTP)</h3>
-        <input type="number" id="maxBetLimitInput" value="150000">
-        <button onclick="simpanBatasRTP()" class="btn-green">SIMPAN BATAS</button>
-    </div>
-
-    <div class="monitor-box" style="border-color: #22d3ee;">
-        <h3>💸 TARUHAN RONDE (<span id="textTotalBetRonde">Rp 0</span>)</h3>
-        <div id="liveBetsList" class="bet-list">Menunggu taruhan...</div>
-    </div>
-
-    <div class="monitor-box">
-        <h3>📺 LIVE MONITOR</h3>
-        <div id="adminLiveMult" class="live-mult">1.00x</div>
-        <button onclick="setInstantCrashNextRound()" class="btn-red">🔥 INSTANT CRASH (1.00x)</button>
-        <button onclick="mulaiCountdownManual()" class="btn-green">🚨 AWALI (5s)</button>
-        <button onclick="manualCrash()" class="btn-red">💥 CRASH</button>
-    </div>
-
-    <div class="monitor-box" style="border-color:#ef4444;">
+    <h1>👑 ADMIN PANEL</h1>
+    <div class="box">
         <h3>📥 PERMINTAAN WD</h3>
         <div id="wdList">Memuat...</div>
     </div>
-
-    <h3>💰 TAMBAH SALDO</h3>
-    <input type="text" id="targetUser" placeholder="Username">
-    <input type="number" id="addAmount" placeholder="Jumlah">
-    <button onclick="addSaldo()" class="btn-green">TAMBAH</button>
+    <div class="box">
+        <h3>💰 TAMBAH SALDO</h3>
+        <input type="text" id="userIn" placeholder="Username">
+        <input type="number" id="amtIn" placeholder="Jumlah">
+        <button onclick="addSaldo()" class="btn-green">TAMBAH</button>
+    </div>
 </div>
 
 <script>
@@ -84,61 +34,32 @@ const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", auth
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// --- CHAT LOGIC ---
-db.collection("live_chat").orderBy("waktu", "desc").limit(10).onSnapshot(snap => {
+// Tarik WD
+db.collection("withdraw_requests").where("status", "==", "PENDING").onSnapshot(snap => {
     let html = "";
-    snap.forEach(doc => { const data = doc.data(); html += `<div><b>${data.user}:</b> ${data.msg}</div>`; });
-    document.getElementById("chatAdminList").innerHTML = html;
+    snap.forEach(doc => {
+        const d = doc.data();
+        html += `<div style="border-bottom:1px solid #444; margin-bottom:10px;">
+            <b>${d.username}</b> - Rp ${d.jumlah} (${d.tujuan}: ${d.rekening})<br>
+            <button class="btn-green" onclick="prosesWD('${doc.id}', '${d.username}', ${d.jumlah}, 'BERHASIL')">APPROVE</button>
+            <button class="btn-red" onclick="prosesWD('${doc.id}', '${d.username}', ${d.jumlah}, 'DITOLAK')">REJECT</button>
+        </div>`;
+    });
+    document.getElementById("wdList").innerHTML = html || "Tidak ada request";
 });
 
-async function balasChat() {
-    const msg = document.getElementById("replyChat").value;
-    if(!msg) return;
-    await db.collection("live_chat").add({ user: "ADMIN", msg: msg, waktu: firebase.firestore.FieldValue.serverTimestamp() });
-    document.getElementById("replyChat").value = "";
-}
-
-// --- FUNGSI EXISTING (BANNED, RTP, WD, DLL) ---
-// (Semua fungsi lama Anda tetap jalan seperti biasa)
-async function prosesBanned(tipe) {
-    const target = document.getElementById("bannedTargetUser").value.trim().toLowerCase();
-    if(!target) return alert("Isi username!");
-    await db.collection("users").doc(target).update({ isBanned: (tipe === 'BAN') });
-    alert("Sukses!");
-}
-
-async function prosesWD(requestId, username, jumlah, keputusan) {
-    if (keputusan === "YA") { await db.collection("withdraw_requests").doc(requestId).update({ status: "BERHASIL" }); alert("WD Disetujui!"); }
-    else { await db.collection("users").doc(username).update({ saldo: firebase.firestore.FieldValue.increment(jumlah) }); await db.collection("withdraw_requests").doc(requestId).update({ status: "DITOLAK" }); alert("WD Ditolak!"); }
-}
-
-async function simpanBatasRTP() {
-    db.collection("game_room").doc("rtp_settings").set({ maxBetLimit: parseInt(document.getElementById("maxBetLimitInput").value) });
-    alert("Batas disimpan!");
+async function prosesWD(id, user, jumlah, status) {
+    if(status === "DITOLAK") await db.collection("users").doc(user).update({ saldo: firebase.firestore.FieldValue.increment(jumlah) });
+    await db.collection("withdraw_requests").doc(id).update({ status: status });
+    alert("Proses " + status);
 }
 
 async function addSaldo() {
-    const user = document.getElementById('targetUser').value.trim().toLowerCase();
-    const amount = parseInt(document.getElementById('addAmount').value);
-    await db.collection("users").doc(user).set({saldo: firebase.firestore.FieldValue.increment(amount)}, {merge: true});
-    alert("Berhasil!");
+    const user = document.getElementById("userIn").value;
+    const amt = parseInt(document.getElementById("amtIn").value);
+    await db.collection("users").doc(user).set({ saldo: firebase.firestore.FieldValue.increment(amt) }, {merge:true});
+    alert("Saldo ditambahkan!");
 }
-
-// (Fungsi Live Monitor, RTP, dan WD listener lainnya tetap sama)
-db.collection("withdraw_requests").where("status", "==", "PENDING").onSnapshot((snapshot) => {
-    let html = "";
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        html += `<div class="wd-box">📌 <b>User:</b> ${data.username}<br>💰 <b>Jml:</b> Rp ${data.jumlah.toLocaleString()}<br><button onclick="prosesWD('${doc.id}', '${data.username}', ${data.jumlah}, 'YA')">YA</button></div>`;
-    });
-    document.getElementById("wdList").innerHTML = html || "Tidak ada WD";
-});
-
-// Listener Player Online
-db.collection("users").where("statusOnline", "==", "ONLINE").onSnapshot((snapshot) => {
-    let html = ""; snapshot.forEach((doc) => { html += `🔹 ${doc.id}<br>`; });
-    document.getElementById("onlineUsersList").innerHTML = html || "Tidak ada pemain.";
-});
 </script>
 </body>
 </html>
