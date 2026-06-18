@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL RESMI LOGIN & DAFTAR</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=700&display=swap');
+        body { font-family: 'Chakra Petch', sans-serif; background: #020617; color: white; text-align: center; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-box { background: #0f172a; padding: 30px; border-radius: 15px; border: 3px solid #facc15; max-width: 400px; width: 100%; box-shadow: 0 0 20px rgba(250, 204, 21, 0.3); }
+        h2 { color: #facc15; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
+        .sub-title { font-size: 11px; color: #94a3b8; margin-bottom: 20px; text-transform: uppercase; }
+        
+        .tab-container { display: flex; background: #1e293b; border-radius: 8px; margin-bottom: 20px; padding: 3px; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; font-family: inherit; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+        .tab-btn.active { background: #facc15; color: black; }
+
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #1e293b; color: white; border: 1px solid #475569; border-radius: 8px; text-align: center; font-family: inherit; font-size: 15px; }
+        
+        .btn-submit { width: 97%; padding: 14px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 15px; text-transform: uppercase; background: #22c55e; color: black; box-shadow: 0 4px #15803d; margin-top: 10px; transition: 0.1s; }
+        .btn-submit:active { transform: translateY(4px); box-shadow: 0 0 #15803d; }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2>PORTAL MASUK</h2>
+    <div class="sub-title">SISTEM GAME ENGINE v2.0</div>
+    
+    <div class="tab-container">
+        <button id="tabLogin" class="tab-btn active" onclick="gantiTab('LOGIN')">MASUK (LOGIN)</button>
+        <button id="tabDaftar" class="tab-btn" onclick="gantiTab('DAFTAR')">DAFTAR</button>
+    </div>
+
+    <input type="text" id="usernameInput" placeholder="MASUKKAN USERNAME...">
+    <button class="btn-submit" id="btnAksi" onclick="prosesAksi()">MASUK SEKARANG</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
+  authDomain: "spaceman-sukses.firebaseapp.com",
+  projectId: "spaceman-sukses",
+  storageBucket: "spaceman-sukses.firebasestorage.app",
+  messagingSenderId: "442967300277",
+  appId: "1:442967300277:web:65b99aebdbc478455586fc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let modeAktif = "LOGIN";
+
+function gantiTab(tipe) {
+    modeAktif = tipe;
+    const tabLogin = document.getElementById("tabLogin");
+    const tabDaftar = document.getElementById("tabDaftar");
+    const btnAksi = document.getElementById("btnAksi");
+
+    if (tipe === "LOGIN") {
+        tabLogin.classList.add("active");
+        tabDaftar.classList.remove("active");
+        btnAksi.textContent = "MASUK SEKARANG";
+        btnAksi.style.background = "#22c55e";
+        btnAksi.style.boxShadow = "0 4px #15803d";
+    } else {
+        tabDaftar.classList.add("active");
+        tabLogin.classList.remove("active");
+        btnAksi.textContent = "DAFTAR AKUN BARU";
+        btnAksi.style.background = "#38bdf8";
+        btnAksi.style.boxShadow = "0 4px #0369a1";
+    }
+}
+
+async function prosesAksi() {
+    const username = document.getElementById("usernameInput").value.trim().toLowerCase();
+    if (!username) return alert("Silakan masukkan Username!");
+
+    const userRef = db.collection("users").doc(username);
+
+    try {
+        const doc = await userRef.get();
+
+        if (modeAktif === "LOGIN") {
+            if (!doc.exists) return alert("❌ Username tidak ditemukan! Silakan DAFTAR terlebih dahulu.");
+            if (doc.data().isBanned === true) return alert("🚫 Akun Anda di-Banned oleh Admin!");
+            await userRef.update({ statusOnline: "ONLINE" });
+        } else {
+            if (doc.exists) return alert("❌ Username sudah terpakai!");
+            await userRef.set({
+                saldo: 0, statusOnline: "ONLINE", isBanned: false, mahjongTargetWin: 0,
+                waktuDaftar: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("✅ Pendaftaran Berhasil!");
+        }
+
+        localStorage.setItem("game_username", username);
+        // LANJUT KE HALAMAN PILIHAN GAME
+        window.location.href = "pilih-game.html";
+
+    } catch (error) {
+        alert("Error database!");
+    }
+}
+</script>
+</body>
+</html>
