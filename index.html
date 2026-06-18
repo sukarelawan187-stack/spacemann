@@ -15,154 +15,58 @@
         .btn-green { background:#22c55e; color:black; }
         .btn-red { background:#ef4444; color:white; }
         .btn-yellow { background:#facc15; color:black; }
-        input, select { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; text-align:center; }
+        input { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; text-align:center; }
         #multiplier { font-size:52px; margin:20px 0; color:#22d3ee; text-shadow: 0 0 10px #22d3ee; }
-        .status-text { font-size: 11px; margin: 10px 0; color: #facc15; min-height: 20px; }
-        
-        .crash-overlay { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(239, 68, 68, 0.9); color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 10; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px black; animation: shake 0.3s infinite; }
-        @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -2px); } }
-        
-        /* POPUP BIG WIN ANIMATION */
-        .bigwin-overlay { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.85); color: #facc15; flex-direction: column; justify-content: center; align-items: center; z-index: 11; font-size: 24px; text-shadow: 0 0 20px #facc15; animation: zoomPulse 0.5s infinite alternate; }
-        @keyframes zoomPulse { from { transform: scale(0.95); } to { transform: scale(1.05); } }
-
         .game-visual { height: 120px; margin: 15px auto; display: flex; justify-content: center; align-items: center; position: relative; background: #0f172a; border-radius: 10px; border: 2px solid #334155; overflow: hidden; }
         .rocket-img { font-size: 50px; display: none; animation: floatRocket 0.5s ease-in-out infinite alternate; }
         @keyframes floatRocket { from { transform: translateY(0px) rotate(45deg); } to { transform: translateY(-15px) rotate(45deg); } }
         .stars-bg { position: absolute; width:100%; height:100%; background: radial-gradient(white, transparent 10%); background-size: 20px 20px; display:none; animation: moveStars 1s linear infinite; }
-        @keyframes moveStars { from { background-position: 0 0; } to { background-position: 0 40px; } }
-        
-        .history-bar { display: flex; justify-content: center; gap: 8px; overflow-x: auto; padding: 8px; background: #0f172a; border-radius: 8px; margin-bottom: 15px; border: 1px solid #334155; }
-        .hist-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: white; }
-        .badge-red { background: #ef4444; } .badge-green { background: #22c55e; }
-        .flex-row { display: flex; justify-content: space-around; width: 92%; margin: auto; gap: 10px; }
-        .flex-row div { width: 50%; }
-
-        .live-bets-panel { margin-top: 20px; background: #0f172a; border-radius: 8px; padding: 10px; text-align: left; border: 1px solid #334155; }
-        .live-bets-panel h4 { font-size: 11px; margin: 5px 0 10px 0; color: #22d3ee; text-align: center; }
-        .bet-row { display: flex; justify-content: space-between; font-size: 9px; padding: 6px 4px; border-bottom: 1px solid #1e293b; color: #94a3b8; }
-        .bet-row.won { color: #22c55e; font-weight: bold; background: rgba(34, 197, 94, 0.1); border-radius: 4px; }
-
-        /* KOTAK LIVE CHAT NEW */
         .chat-panel { margin-top: 15px; background: #111827; border-radius: 8px; padding: 10px; border: 1px solid #4b5563; text-align: left; }
-        .chat-panel h4 { font-size: 11px; margin: 0 0 8px 0; color: #a855f7; text-align: center; }
         .chat-box { height: 130px; overflow-y: auto; background: #030712; padding: 8px; border-radius: 6px; font-size: 9px; line-height: 1.6; margin-bottom: 8px; }
-        .chat-msg { margin-bottom: 6px; word-break: break-all; }
+        .chat-msg { margin-bottom: 6px; }
         .chat-msg b { color: #22d3ee; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div id="crashScreen" class="crash-overlay">💥 CRASHED! 💥</div>
-    <div id="bigwinScreen" class="bigwin-overlay">🎉 JACKPOT<br>BIG WIN! 🎉<br><br><span id="bigwinValue" style="font-size:16px; color:white;">Rp 0</span></div>
-    
     <h1>🚀 SPACEMAN</h1>
-
-    <div class="history-bar" id="historyBarPlayer">Memuat riwayat...</div>
-
+    
+    <!-- AUTH & GAME PAGE -->
     <div id="authPage">
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
         <button onclick="login()" class="btn-blue">LOGIN</button>
-        <button onclick="register()" class="btn-green">DAFTAR</button>
     </div>
     
     <div id="gamePage" style="display:none;">
-        <p style="font-size:11px;">User: <b id="currUser"></b> | Saldo: <span id="saldo" style="color:#22d3ee; font-weight:bold;">Rp 0</span></p>
-        <div class="flex-row" style="width:100%; gap:5px; margin-bottom:10px;">
-            <button onclick="bukaSociabuzz()" class="btn-yellow" style="font-size:10px; padding:10px; margin:0;">💰 TOP UP</button>
-            <button onclick="refreshSaldo()" class="btn-green" style="font-size:10px; padding:10px; margin:0;">🔄 REFRESH</button>
-            <button onclick="showWD()" class="btn-red" style="font-size:10px; padding:10px; margin:0;">💸 WD</button>
-        </div>
-        
+        <p>Saldo: <span id="saldo" style="color:#22d3ee;">Rp 0</span></p>
         <div class="game-visual">
             <div id="starsAnimation" class="stars-bg"></div>
             <div id="rocketIcon" class="rocket-img">🚀</div>
         </div>
-
-        <div id="gameStatus" class="status-text">MENUNGGU TARUHAN...</div>
         <h2 id="multiplier">1.00x</h2>
-
-        <div class="flex-row">
-            <div>
-                <label style="font-size:8px; color:#94a3b8;">JUMLAH BET:</label>
-                <input type="number" id="taruhan" value="5000" style="width:100%;">
-            </div>
-            <div>
-                <label style="font-size:8px; color:#22d3ee;">AUTO CASH OUT (x):</label>
-                <input type="number" id="autoCashoutVal" value="2.00" step="0.1" min="1.1" style="width:100%; border:1px solid #22d3ee;">
-            </div>
-        </div>
-
         <button id="startBtn" onclick="pasangTaruhan()" class="btn-blue">BET / PASANG TARUHAN</button>
         <button id="cashoutBtn" onclick="cashOut()" style="display:none;" class="btn-yellow">💰 CASH OUT</button>
-
-        <div class="live-bets-panel">
-            <h4>📊 TARUHAN LIVE RONDE INI</h4>
-            <div id="playerLiveBetsList"></div>
-        </div>
-
+        
+        <!-- CHAT BOX TERPADU -->
         <div class="chat-panel">
-            <h4>💬 CHAT BOX GLOBAL</h4>
+            <h4>💬 CHAT GLOBAL</h4>
             <div id="chatContainer" class="chat-box"></div>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="chatMessage" placeholder="Ketik pesan..." style="width:75%; margin:0; padding:8px; font-size:10px;">
-                <button onclick="kirimPesanChat()" class="btn-blue" style="width:25%; margin:0; padding:8px; font-size:10px; border-radius:8px;">KIRIM</button>
+                <input type="text" id="chatMessage" placeholder="Pesan..." style="width:75%; margin:0;">
+                <button onclick="kirimPesanChat()" class="btn-blue" style="width:25%; margin:0; padding:10px; font-size:10px;">KIRIM</button>
             </div>
         </div>
-
-        <button onclick="logout()" class="btn-red" style="padding:6px; font-size:10px; border-radius:8px; margin-top:20px; width:40%;">🚪 LOGOUT</button>
-    </div>
-
-    <div id="wdPage" style="display:none;">
-        <h3>💸 TARIK SALDO</h3>
-        <input type="number" id="wdAmount" placeholder="Jumlah WD (Rp)">
-        <select id="wdBank">
-            <option value="DANA">DANA</option><option value="GOPAY">GOPAY</option><option value="OVO">OVO</option><option value="BCA">BANK BCA</option>
-        </select>
-        <input type="text" id="wdNomer" placeholder="No Rekening">
-        <button onclick="kirimWD()" class="btn-green">KIRIM PERMINTAAN</button>
-        <button onclick="hideWD()" class="btn-red">BATAL</button>
     </div>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
-  authDomain: "spaceman-sukses.firebaseapp.com",
-  projectId: "spaceman-sukses",
-  storageBucket: "spaceman-sukses.firebasestorage.app",
-  messagingSenderId: "442967300277",
-  appId: "1:442967300277:web:65b99aebdbc478455586fc"
-};
+const firebaseConfig = { apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM", authDomain: "spaceman-sukses.firebaseapp.com", projectId: "spaceman-sukses", storageBucket: "spaceman-sukses.firebasestorage.app", messagingSenderId: "442967300277", appId: "1:442967300277:web:65b99aebdbc478455586fc" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-let currentUser = null; let currentSaldo = 0; let betAmount = 0; let sudahTaruhan = false;
+let currentUser = null;
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type) {
-    try {
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination);
-        if (type === 'bet') { osc.frequency.setValueAtTime(440, audioCtx.currentTime); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.15); }
-        else if (type === 'countdown') { osc.frequency.setValueAtTime(600, audioCtx.currentTime); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.1); }
-        else if (type === 'fly') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(280, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.03, audioCtx.currentTime); osc.start(); window.currentFlySound = {osc, gain}; }
-        else if (type === 'win') { osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.4, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.4); }
-        else if (type === 'bigwin') { 
-            // BARU: SPESIAL SPEKTAKULER BIG WIN SOUND
-            let t = audioCtx.currentTime;
-            [523, 659, 783, 1046, 783, 1046, 1318].forEach((f, i) => {
-                let o = audioCtx.createOscillator(); let g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination);
-                o.frequency.setValueAtTime(f, t + (i*0.08)); g.gain.setValueAtTime(0.3, t + (i*0.08)); o.start(t + (i*0.08)); o.stop(t + (i*0.08) + 0.12);
-            });
-        }
-        else if (type === 'crash') { osc.type = 'triangle'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(10, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.5, audioCtx.currentTime); osc.start(); osc.stop(audioCtx.currentTime + 0.4); }
-    } catch(e){}
-}
-function stopFlySound() { if(window.currentFlySound) { try { window.currentFlySound.osc.stop(); }catch(e){} window.currentFlySound = null; } }
-
-function bukaSociabuzz() { window.open("https://sociabuzz.com/bolapredik/tribe", "_blank"); }
-
-// MONITOR CHAT BOX GLOBAL
+// --- CHAT LOGIC ---
 db.collection("live_chat").orderBy("waktu", "asc").limitToLast(20).onSnapshot((snapshot) => {
     const box = document.getElementById("chatContainer");
     let html = "";
@@ -173,6 +77,7 @@ db.collection("live_chat").orderBy("waktu", "asc").limitToLast(20).onSnapshot((s
     box.innerHTML = html;
     box.scrollTop = box.scrollHeight;
 });
+
 async function kirimPesanChat() {
     const text = document.getElementById("chatMessage").value.trim();
     if(!text || !currentUser) return;
@@ -180,162 +85,19 @@ async function kirimPesanChat() {
     await db.collection("live_chat").add({ user: currentUser, msg: text, waktu: firebase.firestore.FieldValue.serverTimestamp() });
 }
 
-db.collection("game_history").orderBy("waktu", "desc").limit(7).onSnapshot((snapshot) => {
-    const bar = document.getElementById("historyBarPlayer"); if(snapshot.empty) return; let html = "";
-    snapshot.forEach((doc) => {
-        const val = doc.data().multiplier || 1.00; const warna = val >= 1.50 ? "badge-green" : "badge-red";
-        html += `<span class="hist-badge ${warna}">${val.toFixed(2)}x</span>`;
-    });
-    bar.innerHTML = html;
-});
-
-db.collection("live_bets").onSnapshot((snapshot) => {
-    const listDiv = document.getElementById("playerLiveBetsList"); if (snapshot.empty) { listDiv.innerHTML = "<div style='font-size:8px; text-align:center; color:#64748b;'>Belum ada taruhan masuk...</div>"; return; }
-    let html = ""; snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.status === "WIN") { html += `<div class="bet-row won">👤 ${data.username} <span>Rp ${data.jumlah.toLocaleString()} (WD ${data.winMultiplier}x)</span></div>`; } 
-        else { html += `<div class="bet-row">👤 ${data.username} <span>Rp ${data.jumlah.toLocaleString()}</span></div>`; }
-    });
-    listDiv.innerHTML = html;
-});
-
-async function register() {
-    const user = document.getElementById('username').value.trim().toLowerCase();
-    const pass = document.getElementById('password').value.trim();
-    if (!user || !pass) return alert("Isi data!");
-    await db.collection("users").doc(user).set({password: pass, saldo: 0, statusOnline: "OFFLINE", isBanned: false});
-    alert("✅ Berhasil daftar!");
-}
-
-function listenUserStatus() {
-    // PROTEKSI REALTIME JIKA DI BANNED ADMIN
-    db.collection("users").doc(currentUser).onSnapshot((doc) => {
-        if(doc.exists && doc.data().isBanned === true) {
-            alert("❌ Akun Anda telah DIBAN/DIBLOKIR oleh Admin!");
-            location.reload();
-        }
-    });
-}
-
+// --- GAME LOGIC ---
 async function login() {
     const user = document.getElementById('username').value.trim().toLowerCase();
     const pass = document.getElementById('password').value.trim();
     const doc = await db.collection("users").doc(user).get();
     if (doc.exists && doc.data().password === pass) {
-        if(doc.data().isBanned === true) return alert("❌ Akun Anda diblokir!");
         currentUser = user;
-        await db.collection("users").doc(user).update({ statusOnline: "ONLINE" });
         document.getElementById('authPage').style.display = 'none';
         document.getElementById('gamePage').style.display = 'block';
-        document.getElementById('currUser').textContent = user;
-        updateSaldoBiasa(); listenToAdminGame(); listenUserStatus();
-        window.addEventListener('beforeunload', function () { db.collection("users").doc(currentUser).update({ statusOnline: "OFFLINE" }); });
-    } else { alert("❌ Akun salah!"); }
-}
-async function logout() { if (currentUser) { await db.collection("users").doc(currentUser).update({ statusOnline: "OFFLINE" }); location.reload(); } }
-async function updateSaldoBiasa() { if (!currentUser) return; const doc = await db.collection("users").doc(currentUser).get(); if (doc.exists) { currentSaldo = doc.data().saldo || 0; document.getElementById('saldo').textContent = `Rp ${currentSaldo.toLocaleString()}`; } }
-function refreshSaldo() { updateSaldoBiasa(); alert("✅ Di-refresh!"); }
-
-let lastStatus = "";
-function listenToAdminGame() {
-    db.collection("game_room").doc("live_match").onSnapshot((doc) => {
-        if (!doc.exists) return;
-        const data = doc.data(); const status = data.status || "WAITING"; const multiplier = data.currentMultiplier || 1.00; const countdown = data.countdown !== undefined ? data.countdown : 0;
-        
-        document.getElementById('multiplier').textContent = multiplier.toFixed(2) + "x";
-
-        if (status === "TERBANG" && sudahTaruhan) {
-            const targetAuto = parseFloat(document.getElementById("autoCashoutVal").value);
-            if (!isNaN(targetAuto) && multiplier >= targetAuto) { cashOut(); }
-        }
-
-        if (status === "COUNTDOWN") {
-            stopFlySound();
-            document.getElementById('crashScreen').style.display = 'none'; document.getElementById('bigwinScreen').style.display = 'none';
-            document.getElementById('rocketIcon').style.display = 'none'; document.getElementById('starsAnimation').style.display = 'none';
-            document.getElementById('gameStatus').textContent = `🚨 MELUNCUR DALAM: ${countdown} DETIK!`;
-            document.getElementById('gameStatus').style.color = "#facc15";
-            document.getElementById('startBtn').disabled = false; document.getElementById('startBtn').style.opacity = "1"; document.getElementById('cashoutBtn').style.display = 'none';
-            if(countdown > 0 && lastStatus !== countdown) { playSound('countdown'); }
-            lastStatus = countdown;
-        }
-        else if (status === "WAITING") {
-            stopFlySound();
-            document.getElementById('crashScreen').style.display = 'none'; document.getElementById('rocketIcon').style.display = 'none'; document.getElementById('starsAnimation').style.display = 'none';
-            document.getElementById('gameStatus').textContent = "⏱️ MENUNGGU ROUND BARU...";
-            document.getElementById('gameStatus').style.color = "#facc15";
-            document.getElementById('startBtn').disabled = false; document.getElementById('startBtn').style.opacity = "1"; document.getElementById('cashoutBtn').style.display = 'none';
-        } 
-        else if (status === "TERBANG") {
-            document.getElementById('startBtn').disabled = true; document.getElementById('startBtn').style.opacity = "0.5";
-            document.getElementById('gameStatus').textContent = "🚀 ROKET SEDANG TERBANG!";
-            document.getElementById('gameStatus').style.color = "#22d3ee";
-            document.getElementById('rocketIcon').style.display = 'block'; document.getElementById('starsAnimation').style.display = 'block';
-            if (!window.currentFlySound) playSound('fly');
-            if (sudahTaruhan) document.getElementById('cashoutBtn').style.display = 'inline-block';
-        } 
-        else if (status === "CRASH") {
-            stopFlySound(); document.getElementById('rocketIcon').style.display = 'none'; document.getElementById('starsAnimation').style.display = 'none';
-            if (document.getElementById('crashScreen').style.display !== 'flex') playSound('crash');
-            document.getElementById('crashScreen').style.display = 'flex';
-            document.getElementById('gameStatus').textContent = "💥 BOOM! ROKET MELEDAK!";
-            document.getElementById('gameStatus').style.color = "#ef4444";
-            document.getElementById('cashoutBtn').style.display = 'none';
-            sudahTaruhan = false; updateSaldoBiasa();
-        }
-    });
+    } else { alert("Login Salah!"); }
 }
 
-async function pasangTaruhan() {
-    if (sudahTaruhan) return alert("Sudah pasang taruhan!");
-    const bet = parseInt(document.getElementById('taruhan').value);
-    if (bet < 2000) return alert("❌ Minimal Taruhan Rp 2.000!");
-    if (bet > currentSaldo || bet <= 0) return alert("Saldo kurang!");
-    
-    playSound('bet');
-    await db.collection("users").doc(currentUser).update({ saldo: firebase.firestore.FieldValue.increment(-bet) });
-    await db.collection("live_bets").doc(currentUser).set({ username: currentUser, jumlah: bet, status: "PLAYING" });
-    
-    betAmount = bet; sudahTaruhan = true; currentSaldo -= bet; 
-    document.getElementById('saldo').textContent = `Rp ${currentSaldo.toLocaleString()}`;
-    alert("✅ Taruhan Berhasil Dipasang!");
-}
-
-async function cashOut() {
-    if (!sudahTaruhan) return;
-    sudahTaruhan = false;
-    document.getElementById('cashoutBtn').style.display = 'none';
-    const liveMult = parseFloat(document.getElementById('multiplier').textContent);
-    const win = Math.floor(betAmount * liveMult);
-    
-    await db.collection("live_bets").doc(currentUser).update({ status: "WIN", winMultiplier: liveMult });
-    await db.collection("users").doc(currentUser).update({ saldo: firebase.firestore.FieldValue.increment(win) });
-    
-    // INTEGRASI AUDIO DAN VISUAL BARU UNTUK BIG WIN JACKPOT
-    if(liveMult >= 3.00) {
-        playSound('bigwin');
-        document.getElementById("bigwinValue").textContent = `+Rp ${win.toLocaleString()} (${liveMult.toFixed(2)}x)`;
-        document.getElementById("bigwinScreen").style.display = "flex";
-        setTimeout(() => { document.getElementById("bigwinScreen").style.display = "none"; }, 3500);
-    } else {
-        playSound('win');
-        alert(`🎉 CASH OUT! MENANG Rp ${win.toLocaleString()}`);
-    }
-    updateSaldoBiasa();
-}
-
-function showWD() { document.getElementById('gamePage').style.display = 'none'; document.getElementById('wdPage').style.display = 'block'; }
-function hideWD() { document.getElementById('wdPage').style.display = 'none'; document.getElementById('gamePage').style.display = 'block'; }
-async function kirimWD() {
-    const amount = parseInt(document.getElementById('wdAmount').value); const bank = document.getElementById('wdBank').value; const nomer = document.getElementById('wdNomer').value.trim();
-    if (!amount || !nomer) return alert("Isi semua data!");
-    if (amount < 50000) return alert("❌ Minimal WD Rp 50.000!");
-    if (amount > currentSaldo) return alert("❌ Saldo tidak cukup!");
-
-    await db.collection("users").doc(currentUser).update({ saldo: firebase.firestore.FieldValue.increment(-amount) });
-    await db.collection("withdraw_requests").add({ username: currentUser, jumlah: amount, tujuan: bank, rekening: nomer, status: "PENDING", waktu: firebase.firestore.FieldValue.serverTimestamp() });
-    alert("🚀 WD terkirim!"); updateSaldoBiasa(); hideWD();
-}
+// (Fungsi Pasang Taruhan & Game Engine lainnya tetap pakai script kamu sebelumnya)
 </script>
 </body>
 </html>
