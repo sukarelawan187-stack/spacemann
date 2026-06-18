@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 LIVE CHAT ADMIN</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=500;700&display=swap');
+        body { font-family: 'Chakra Petch', sans-serif; background:#040d1a; color:white; text-align:center; margin:0; padding:15px; }
+        .container { max-width:450px; margin:auto; background:#0b192e; padding:15px; border:2px solid #22c55e; border-radius:12px; }
+        .chat-box { height: 300px; overflow-y: auto; background: #020617; padding: 12px; border-radius: 8px; font-size: 13px; text-align: left; margin-bottom: 10px; border: 1px solid #334155; }
+        input { width: 75%; padding: 10px; background: #1e293b; color: white; border: 1px solid #475569; border-radius: 8px; font-family: inherit; font-size:14px; }
+        button { width: 20%; padding: 10px; font-weight: bold; background: #22c55e; border: none; color: black; border-radius: 8px; cursor: pointer; font-family: inherit; }
+        .msg-line { margin-bottom: 8px; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <button onclick="window.location.href='index.html'" style="width:30%; padding:5px; background:#ef4444; color:white; margin-bottom:10px; font-size:12px;">⬅️ KEMBALI</button>
+    <h3>💬 HUBUNGI LAYANAN ADMIN</h3>
+    <p style="font-size:11px; color:#94a3b8; margin:0 0 10px 0;">Kirim keluhan, konfirmasi deposit, atau pertanyaan ke admin di bawah ini:</p>
+    
+    <div id="boxPesan" class="chat-box">Menghubungkan layanan...</div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <input type="text" id="txtPesan" placeholder="Ketik pesan Anda di sini...">
+        <button onclick="kirimPesanKeAdmin()">KIRIM</button>
+    </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
+  authDomain: "spaceman-sukses.firebaseapp.com",
+  projectId: "spaceman-sukses",
+  storageBucket: "spaceman-sukses.firebasestorage.app",
+  messagingSenderId: "442967300277",
+  appId: "1:442967300277:web:65b99aebdbc478455586fc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const pUser = localStorage.getItem("game_user") || "guest";
+
+// Konek ke database obrolan privat dengan admin
+db.collection("private_chats").where("room", "==", pUser).orderBy("waktu", "asc").onSnapshot((snapshot) => {
+    const box = document.getElementById("boxPesan");
+    if(snapshot.empty) { box.innerHTML = "<p style='color:#64748b; text-align:center;'>Belum ada obrolan. Silakan kirim pesan perdana Anda.</p>"; return; }
+    let html = "";
+    snapshot.forEach((doc) => {
+        const d = doc.data();
+        if(d.pengirim === "ADMIN") {
+            html += `<div class="msg-line"><b style='color:#facc15;'>[👑 ADMIN]:</b> ${d.text}</div>`;
+        } else {
+            html += `<div class="msg-line"><b style='color:#38bdf8;'>[Anda]:</b> ${d.text}</div>`;
+        }
+    });
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+});
+
+async function kirimPesanKeAdmin() {
+    const isi = document.getElementById("txtPesan").value.trim(); if(!isi) return;
+    document.getElementById("txtPesan").value = "";
+    
+    // Kirim pesan ke room admin & tandai status pending chat baru
+    await db.collection("private_chats").add({
+        room: pUser, pengirim: pUser, text: isi, waktu: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection("chat_tickets").doc(pUser).set({
+        username: pUser, pesanTerakhir: isi, waktu: firebase.firestore.FieldValue.serverTimestamp(), status: "OPEN"
+    });
+}
+</script>
+</body>
+</html>
