@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>LOGIN PORTAL</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #0a0a1f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1a1a2e; padding: 20px; border-radius: 15px; border: 2px solid #22d3ee; width: 300px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
+        button { width: 95%; padding: 10px; background: #22d3ee; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>LOGIN PLAYER</h2>
+    <input type="text" id="username" placeholder="Masukkan Username...">
+    <button onclick="login()">MASUK KE GAME</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAzJ6p_stDYeaviIK1CapIpz_pc8onN5hM",
+  authDomain: "spaceman-sukses.firebaseapp.com",
+  projectId: "spaceman-sukses",
+  storageBucket: "spaceman-sukses.firebasestorage.app",
+  messagingSenderId: "442967300277",
+  appId: "1:442967300277:web:65b99aebdbc478455586fc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function login() {
+    const user = document.getElementById("username").value.trim();
+    if(!user) return alert("Masukkan username!");
+
+    // Cek apakah user ada di database
+    db.collection("users").doc(user).get().then((doc) => {
+        if(doc.exists) {
+            localStorage.setItem("game_user", user);
+            window.location.href = "index.html"; // Arahkan ke halaman utama/menu game
+        } else {
+            alert("Username tidak terdaftar!");
+        }
+    });
+}
+</script>
+</body>
+</html>
