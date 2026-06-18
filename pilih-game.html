@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PILIH KATEGORI GAME</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=700&display=swap');
+        body { font-family: 'Chakra Petch', sans-serif; background: #020617; color: white; text-align: center; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .menu-box { background: #0f172a; padding: 30px; border-radius: 15px; border: 3px solid #22c55e; max-width: 450px; width: 100%; box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+        h2 { color: #22c55e; margin-bottom: 5px; text-transform: uppercase; }
+        .welcome-text { font-size: 14px; color: #e2e8f0; margin-bottom: 25px; }
+        
+        .game-card { background: #1e293b; padding: 20px; margin: 15px 0; border-radius: 10px; cursor: pointer; transition: 0.2s; border: 1px solid #475569; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: white; }
+        .game-card:hover { transform: scale(1.03); background: #334155; }
+        
+        .card-spaceman { border-left: 6px solid #38bdf8; }
+        .card-mahjong { border-left: 6px solid #ea580c; }
+        
+        .title-game { font-size: 18px; font-weight: bold; text-align: left; }
+        .btn-play { padding: 8px 15px; font-size: 12px; font-weight: bold; border-radius: 5px; border: none; text-transform: uppercase; }
+        .play-spaceman { background: #38bdf8; color: black; }
+        .play-mahjong { background: #ea580c; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="menu-box">
+    <h2>SELAMAT DATANG</h2>
+    <div class="welcome-text">Halo, <b id="lblUser" style="color: #facc15;">Player</b>! Silakan pilih game Anda:</div>
+
+    <a href="spaceman.html" class="game-card card-spaceman">
+        <div class="title-game">🚀 SPACEMAN GAME</div>
+        <button class="btn-play play-spaceman">MAIN</button>
+    </a>
+
+    <a href="mahjong.html" class="game-card card-mahjong">
+        <div class="title-game">🀄 MAHJONG WAYS 2</div>
+        <button class="btn-play play-mahjong">MAIN</button>
+    </a>
+</div>
+
+<script>
+    // Ambil nama user yang sedang login
+    const user = localStorage.getItem("game_username") || "Player";
+    document.getElementById("lblUser").textContent = user.toUpperCase();
+</script>
+</body>
+</html>
