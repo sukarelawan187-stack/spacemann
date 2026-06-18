@@ -3,143 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 SUPER CONTROL PANEL ADMIN</title>
+    <title>👑 PANEL CONTROL ADMIN ADVANCED</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght=700&display=swap');
-        body { font-family: 'Chakra Petch', sans-serif; background:#020617; color:white; text-align:center; margin:0; padding:15px; }
-        .container { max-width:800px; margin:auto; background:#0f172a; padding:20px; border:4px solid #ef4444; border-radius:15px; }
-        button { width:100%; padding:12px; margin:5px 0; font-size:12px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-family:inherit; }
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body { font-family: 'Press Start 2P', sans-serif; background:#0a0a1f; color:white; text-align:center; margin:0; padding:15px; }
+        .container { max-width:700px; margin:auto; background:#1a1a2e; padding:20px; border:4px solid #ef4444; border-radius:15px; }
+        button { width:100%; padding:15px; margin:10px 0; font-size:12px; border:none; border-radius:8px; cursor:pointer; font-family:inherit; }
         .btn-green { background:#22c55e; color:black; }
         .btn-red { background:#ef4444; color:white; }
-        .btn-blue { background:#38bdf8; color:black; }
-        .btn-purple { background:#a855f7; color:white; }
+        .btn-blue { background:#22d3ee; color:black; }
         .btn-orange { background:#f97316; color:white; }
-        input, select { width:90%; padding:10px; margin:5px 0; background:#1e293b; color:white; border:1px solid #475569; border-radius:8px; font-family:inherit; text-align:center; }
-        .monitor-box { background: #1e293b; border: 2px dashed #facc15; padding: 12px; border-radius: 8px; margin: 12px 0; text-align:left; font-size:12px; }
-        .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:15px; }
-        .wd-box { background:#0f172a; border:1px solid #ef4444; padding:10px; margin:8px 0; border-radius:8px; }
-        .ticket-item { background:#020617; padding:6px; margin:4px 0; border-radius:4px; border-left:4px solid #ec4899; cursor:pointer; }
-        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 5px 0; }
-        .input-pola { width: 85% !important; padding: 5px !important; font-size: 11px !important; }
+        input, select { width:90%; padding:12px; margin:8px 0; background:#334155; color:white; border:none; border-radius:8px; font-family:inherit; text-align:center; }
+        .monitor-box { background: #282846; border: 2px dashed #facc15; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 11px; }
+        .live-mult { font-size: 40px; color: #facc15; margin: 15px 0; }
+        .wd-box { background:#1e1e38; border:2px solid #ef4444; padding:10px; margin:10px 0; border-radius:8px; font-size:10px; text-align:left; }
+        .mode-select { padding: 12px; font-size: 13px; background: #475569; color: white; border-radius: 8px; width: 100%; font-family: inherit; margin: 10px 0; }
+        .online-list { text-align: left; background: #111827; padding: 10px; border-radius: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; line-height: 1.8; border-left: 4px solid #22c55e; }
+        .bet-list { text-align: left; background: #0f172a; padding: 10px; border-radius: 8px; font-size: 10px; max-height: 150px; overflow-y: auto; line-height: 1.8; border-left: 4px solid #22d3ee; color: #22d3ee; }
+        .history-bar { display: flex; justify-content: center; gap: 8px; overflow-x: auto; padding: 8px; background: #0f172a; border-radius: 8px; margin-bottom: 10px; }
+        .hist-badge { padding: 4px 8px; border-radius: 4px; font-size: 9px; color: white; }
+        .badge-red { background: #ef4444; } .badge-green { background: #22c55e; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>👑 SUPER ADMIN CONTROL PANEL</h1>
-    <p style="color:#94a3b8; font-size:12px;">Pusat Manajemen Akun, Saldo, WD, serta Cheat Spaceman & Mahjong Ways 2</p>
+    <h1>👑 PANEL ADMIN</h1>
+    
+    <div class="monitor-box" style="border-color: #22c55e;">
+        <h3>🟢 PEMAIN ONLINE</h3>
+        <div id="onlineUsersList" class="online-list">Memuat...</div>
+    </div>
 
-    <div class="monitor-box" style="border-color:#38bdf8;">
-        <h3>👥 KONTROL AKUN & PEMBERIAN SALDO</h3>
-        <div id="onlineUsersList" style="max-height:100px; overflow-y:auto; margin-bottom:10px; background:#0f172a; padding:8px; border-radius:6px;">Memuat...</div>
+    <div class="monitor-box" style="border-color: #ec4899;">
+        <h3>🚫 UTILITY BANNED / SANKSI PLAYER</h3>
+        <input type="text" id="bannedTargetUser" placeholder="Masukkan Username Player" style="width:60%; border:1px solid #ec4899;">
+        <div style="display:flex; gap:10px; width:90%; margin:auto;">
+            <button onclick="prosesBanned('BAN')" class="btn-red" style="padding:10px; margin:0;">🚫 BLOKIR (BAN)</button>
+            <button onclick="prosesBanned('UNBAN')" class="btn-green" style="padding:10px; margin:0;">✅ LEPAS BLOKIR</button>
+        </div>
+    </div>
+
+    <div class="monitor-box" style="border-color: #facc15;">
+        <h3>🛡️ AUTO RTP PENGAMAN (ANTI-BOCOR)</h3>
+        <label style="font-size:9px; color:#22c55e;">BATAS MAKSIMAL TARUHAN RONDE (Rp):</label>
+        <input type="number" id="maxBetLimitInput" value="150000" style="border: 2px solid #22c55e; width: 50%;">
+        <button onclick="simpanBatasRTP()" class="btn-green" style="padding:8px; font-size:11px; width:40%; margin:5px auto; display:block;">SIMPAN BATAS</button>
+    </div>
+
+    <div class="monitor-box" style="border-color: #22d3ee;">
+        <h3>💸 TARUHAN RONDE INI (Total: <span id="textTotalBetRonde" style="color:#22c55e;">Rp 0</span>)</h3>
+        <div id="liveBetsList" class="bet-list">Menunggu taruhan masuk...</div>
+    </div>
+
+    <div class="monitor-box" style="border-color: #a855f7;">
+        <h3>⚙️ MODE SISTEM GAME</h3>
+        <select id="sysMode" class="mode-select" onchange="gantiModeSistem()">
+            <option value="MANUAL">🕹️ MODE MANUAL (Admin Klik)</option>
+            <option value="OTOMATIS">⚡ MODE AUTOPILOT (Jalan Sendiri)</option>
+        </select>
+    </div>
+
+    <div class="monitor-box">
+        <h3>📺 LIVE MONITOR</h3>
+        <div class="history-bar" id="historyBarAdmin"></div>
+        <div id="statusMulai" style="color: #facc15;">Status: LOADING</div>
+        <div class="live-mult" id="adminLiveMult">1.00x</div>
         
-        <div class="grid-2">
-            <div>
-                <input type="text" id="targetUser" placeholder="Username Target" style="width:90%;">
-                <input type="number" id="addAmount" placeholder="Jumlah Saldo (Rp)" style="width:90%;">
-                <button onclick="addSaldo()" class="btn-green">➕ TAMBAH SALDO</button>
-            </div>
-            <div>
-                <input type="text" id="bannedTargetUser" placeholder="Username Sanksi" style="width:90%;">
-                <div style="display:flex; gap:5px; width:95%;">
-                    <button onclick="prosesBanned('BAN')" class="btn-red" style="font-size:10px;">🚫 BAN</button>
-                    <button onclick="prosesBanned('UNBAN')" class="btn-green" style="font-size:10px;">✅ UNBAN</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <button onclick="setInstantCrashNextRound()" class="btn-red" style="background:linear-gradient(to right, #b91c1c, #ef4444); border: 2px solid white;">🔥 SET INSTANT CRASH (1.00x - PLAYER ZONK)</button>
+        <p id="statusInstantCrash" style="font-size:10px; color:#facc15; margin:5px 0;">Status Pengaman: NORMAL</p>
 
-    <div class="monitor-box" style="border-color:#22d3ee;">
-        <h3>🚀 GAME ENGINE: SPACEMAN (SISTEM TERBANG)</h3>
-        <p>Total Taruhan Ronde Ini: <b id="textTotalBetRonde" style="color:#22c55e;">Rp 0</b></p>
-        <div id="liveBetsList" style="max-height:80px; overflow-y:auto; background:#0f172a; padding:6px; border-radius:6px; margin-bottom:10px;"></div>
+        <div id="manualControls">
+            <button onclick="mulaiCountdownManual()" class="btn-green">🚨 AWALI HITUNG MUNDUR (5s)</button>
+            <button onclick="manualCrash()" class="btn-red">💥 MELEDAKKAN (CRASH)</button>
+            <button onclick="manualReset()" class="btn-blue">🔄 RESET RONDE BARU</button>
+        </div>
         
-        <div class="grid-2">
-            <div>
-                <label style="font-size:10px;">Batas Anti-Bocor Spaceman (Rp):</label>
-                <input type="number" id="maxBetLimitInput" value="150000" style="width:50%; padding:6px; display:inline-block;">
-                <button onclick="simpanBatasRTP()" class="btn-green" style="width:35%; display:inline-block; padding:6px; margin:0;">SAVE</button>
-
-                <select id="sysMode" onchange="gantiModeSistem()" style="margin-top:10px;">
-                    <option value="MANUAL">🕹️ MODE MANUAL</option>
-                    <option value="OTOMATIS">⚡ MODE AUTOPILOT</option>
-                </select>
-                <button onclick="setInstantCrashNextRound()" class="btn-red">🔥 SET INSTANT CRASH NEXT ROUND (1.00x)</button>
-            </div>
-            <div style="background:#0f172a; padding:10px; border-radius:8px; text-align:center;">
-                <div id="statusMulai" style="color:#facc15;">Status: WAITING</div>
-                <div id="adminLiveMult" style="font-size:28px; color:#facc15;">1.00x</div>
-                <button onclick="mulaiCountdownManual()" class="btn-green" style="padding:4px; font-size:10px; margin:2px 0;">START COUNTDOWN (5s)</button>
-                <button onclick="manualCrash()" class="btn-red" style="padding:4px; font-size:10px; margin:2px 0;">💥 CRASH SEKARANG</button>
-                <button onclick="manualReset()" class="btn-orange" style="padding:4px; font-size:10px; margin:2px 0;">🔄 RESET MANUAL KE 1.00x</button>
-                <div id="infoPolaAktif" style="font-size:10px; color:#a855f7; margin-top:5px; font-weight:bold;">Status Pola: Non-Aktif</div>
-            </div>
-        </div>
-
-        <div style="margin-top:12px; background:#020617; padding:10px; border-radius:8px; border:1px solid #a855f7;">
-            <label style="font-size:11px; color:#a855f7; font-weight:bold;">📋 SETINGAN POLA OTOMATIS (10 PUTARAN SPACEMAN)</label>
-            <p style="font-size:10px; color:#94a3b8; margin:2px 0 6px 0;">Isi target perkalian (contoh: 1.50, 3.20, 1.00). Kosongkan atau isi 0 jika tidak ingin diubah.</p>
-            <div class="grid-5">
-                <input type="number" step="0.01" id="p1" placeholder="Ptg 1" class="input-pola">
-                <input type="number" step="0.01" id="p2" placeholder="Ptg 2" class="input-pola">
-                <input type="number" step="0.01" id="p3" placeholder="Ptg 3" class="input-pola">
-                <input type="number" step="0.01" id="p4" placeholder="Ptg 4" class="input-pola">
-                <input type="number" step="0.01" id="p5" placeholder="Ptg 5" class="input-pola">
-            </div>
-            <div class="grid-5">
-                <input type="number" step="0.01" id="p6" placeholder="Ptg 6" class="input-pola">
-                <input type="number" step="0.01" id="p7" placeholder="Ptg 7" class="input-pola">
-                <input type="number" step="0.01" id="p8" placeholder="Ptg 8" class="input-pola">
-                <input type="number" step="0.01" id="p9" placeholder="Ptg 9" class="input-pola">
-                <input type="number" step="0.01" id="p10" placeholder="Ptg 10" class="input-pola">
-            </div>
-            <button onclick="kunciPola10Putaran()" class="btn-purple" style="padding:6px; margin-top:5px;">🔒 KUNCI & TERAPKAN POLA 10 PUTARAN</button>
-        </div>
-    </div>
-
-    <div class="monitor-box" style="border-color:#facc15;">
-        <h3>🀄 GAME ENGINE: MAHJONG WAYS 2</h3>
-        <div class="grid-2">
-            <div>
-                <label style="font-size:11px;">Mode Global Roll:</label>
-                <select id="mahjongModeSelect" onchange="setelSetinganMahjong()" style="width:100%; font-size:12px; padding:8px;">
-                    <option value="NORMAL">🎲 MODE NORMAL (MURNI / ACAK)</option>
-                    <option value="FORCE_WIN">🔥 PASTI PECAH (SENSASIONAL WAYS)</option>
-                    <option value="FORCE_ZONK">❌ SETTINGAN ZONK (ANTI-PECAH)</option>
-                </select>
-            </div>
-            <div style="background:#020617; padding:8px; border-radius:8px; border:1px dashed #facc15;">
-                <label style="font-size:10px; color:#22c55e; font-weight:bold;">🎯 SET NOMINAL PECAHAN PLAYER</label>
-                <input type="text" id="cheatUserTarget" placeholder="Username Player" style="width:90%; padding:5px; font-size:11px; margin:2px 0;">
-                <input type="number" id="cheatTargetNominal" placeholder="Target Menang (Contoh: 500000)" style="width:90%; padding:5px; font-size:11px; margin:2px 0;">
-                <button onclick="simpanCheatNominalMahjong()" class="btn-green" style="padding:5px; font-size:11px; margin-top:3px;">KUNCI TARGET PECAH</button>
-            </div>
-        </div>
-        <div id="listTaruhanMahjong" style="max-height:60px; overflow-y:auto; background:#0f172a; padding:6px; border-radius:6px; margin-top:10px;">Menunggu spin player...</div>
-    </div>
-
-    <div class="monitor-box" style="border-color:#ec4899;">
-        <h3>📥 INBOX LIVE CHAT PRIVATE PLAYER</h3>
-        <div class="grid-2">
-            <div>
-                <div id="listTiketChat" style="max-height:110px; overflow-y:auto; background:#0f172a; padding:6px; border-radius:6px; font-size:11px;">Belum ada tiket...</div>
-            </div>
-            <div>
-                <label style="font-size:11px; font-weight:bold; color:#22d3ee;">Room Chat: <span id="lblRoomAktif" style="color:white;">-</span></label>
-                <div id="boxIsiChatPrivate" style="height:65px; overflow-y:auto; background:#020617; padding:6px; border-radius:6px; font-size:11px; margin-bottom:4px; border:1px solid #475569;">Pilih tiket...</div>
-                <div style="display:flex; gap:4px;">
-                    <input type="text" id="txtBalasPrivate" placeholder="Balas..." style="padding:6px; font-size:11px; text-align:left;">
-                    <button onclick="kirimBalasanPrivate()" class="btn-blue" style="width:30%; margin:0; padding:4px; font-size:10px;">KIRIM</button>
-                </div>
-            </div>
+        <div id="autoControls" style="display:none;">
+            <button onclick="manualCrash()" class="btn-orange">💥 PAKSA CRASH SEKARANG</button>
         </div>
     </div>
 
     <div class="monitor-box" style="border-color:#ef4444;">
-        <h3>📥 ANTRIAN WITHDRAW (WD)</h3>
-        <div id="wdList">Antrian kosong.</div>
+        <h3>📥 PERMINTAAN WD</h3>
+        <div id="wdList">Menunggu...</div>
     </div>
+
+    <h3>💰 TAMBAH SALDO</h3>
+    <input type="text" id="targetUser" placeholder="Username">
+    <input type="number" id="addAmount" placeholder="Jumlah Saldo">
+    <button onclick="addSaldo()" class="btn-green">TAMBAH SALDO</button>
 </div>
 
 <script>
@@ -154,93 +108,117 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-db.collection("users").onSnapshot((snapshot) => {
-    const listDiv = document.getElementById("onlineUsersList"); if(snapshot.empty) return;
-    let html = ""; snapshot.forEach((doc) => { const data = doc.data(); const st = data.statusOnline === "ONLINE" ? "🟢" : "⚫"; html += `${st} <b>${doc.id}</b> (Saldo: Rp ${(data.saldo||0).toLocaleString()}) [Banned: ${data.isBanned}]<br>`; });
+let localLoop = null; let currentStatus = "WAITING"; let activeMode = "MANUAL"; let currentMult = 1.00;
+let isInstantCrashSetup = false; let globalTotalBetRonde = 0; let globalMaxBetLimit = 150000;
+
+db.collection("game_room").doc("rtp_settings").onSnapshot((doc) => {
+    if(doc.exists) { globalMaxBetLimit = doc.data().maxBetLimit || 150000; document.getElementById("maxBetLimitInput").value = globalMaxBetLimit; }
+});
+function simpanBatasRTP() {
+    const val = parseInt(document.getElementById("maxBetLimitInput").value);
+    db.collection("game_room").doc("rtp_settings").set({ maxBetLimit: val });
+    alert("✅ Batas anti-bocor disimpan!");
+}
+
+// ACTION BUTTON UNTUK BAN / UNBAN PLAYER
+async function prosesBanned(tipe) {
+    const target = document.getElementById("bannedTargetUser").value.trim().toLowerCase();
+    if(!target) return alert("Masukkan username target!");
+    const docRef = db.collection("users").doc(target);
+    const check = await docRef.get();
+    if(!check.exists) return alert("Username tidak ditemukan di database!");
+
+    if(tipe === 'BAN') {
+        await docRef.update({ isBanned: true, statusOnline: "OFFLINE" });
+        alert(`🚫 Sukses! Akun ${target} resmi DI-BANNED.`);
+    } else {
+        await docRef.update({ isBanned: false });
+        alert(`✅ Sukses! Blokir akun ${target} telah DIBUKA.`);
+    }
+    document.getElementById("bannedTargetUser").value = "";
+}
+
+db.collection("users").where("statusOnline", "==", "ONLINE").onSnapshot((snapshot) => {
+    const listDiv = document.getElementById("onlineUsersList");
+    if(snapshot.empty) { listDiv.innerHTML = "<span style='color:#64748b;'>❌ Tidak ada pemain online.</span>"; return; }
+    let html = ""; snapshot.forEach((doc) => { const data = doc.data(); html += `🔹 <b>${doc.id}</b> (Saldo: Rp ${(data.saldo || 0).toLocaleString()})<br>`; });
     listDiv.innerHTML = html;
 });
-async function addSaldo() {
-    const user = document.getElementById('targetUser').value.trim().toLowerCase(); const amount = parseInt(document.getElementById('addAmount').value);
-    if (!user || !amount) return alert("Isi data!");
-    await db.collection("users").doc(user).update({saldo: firebase.firestore.FieldValue.increment(amount)});
-    alert(`✅ Berhasil tambah saldo Rp ${amount.toLocaleString()} ke ${user}`);
-}
-async function prosesBanned(tipe) {
-    const target = document.getElementById("bannedTargetUser").value.trim().toLowerCase(); if(!target) return;
-    if(tipe === 'BAN') { await db.collection("users").doc(target).update({ isBanned: true, statusOnline: "OFFLINE" }); alert("🚫 Terblokir!"); } 
-    else { await db.collection("users").doc(target).update({ isBanned: false }); alert("✅ Blokir dibuka!"); }
-}
 
-let localLoop = null; let currentStatus = "WAITING"; let activeMode = "MANUAL"; let isInstantCrashSetup = false; let globalTotalBetRonde = 0; let globalMaxBetLimit = 150000;
-let polaDaftar = []; let indeksPolaSekarang = 0;
-
-db.collection("game_room").doc("rtp_settings").onSnapshot((doc) => { if(doc.exists) { globalMaxBetLimit = doc.data().maxBetLimit || 150000; document.getElementById("maxBetLimitInput").value = globalMaxBetLimit; } });
-function simpanBatasRTP() { const val = parseInt(document.getElementById("maxBetLimitInput").value); db.collection("game_room").doc("rtp_settings").set({ maxBetLimit: val }); alert("Saved Limit!"); }
 db.collection("live_bets").onSnapshot((snapshot) => {
     const betListDiv = document.getElementById("liveBetsList"); const totalSpan = document.getElementById("textTotalBetRonde");
-    if (snapshot.empty) { betListDiv.innerHTML = "Belum ada bet."; totalSpan.textContent = "Rp 0"; globalTotalBetRonde = 0; return; }
-    let html = ""; let total = 0; snapshot.forEach((doc) => { const data = doc.data(); html += `🔹 <b>${data.username}</b>: Rp ${(data.jumlah || 0).toLocaleString()}<br>`; total += (data.jumlah || 0); });
+    if (snapshot.empty) { betListDiv.innerHTML = "<span style='color:#64748b;'>Belum ada taruhan.</span>"; totalSpan.textContent = "Rp 0"; globalTotalBetRonde = 0; return; }
+    let html = ""; let total = 0;
+    snapshot.forEach((doc) => { const data = doc.data(); html += `🔹 <b>${data.username}</b>: Rp ${(data.jumlah || 0).toLocaleString()} [${data.status || 'PLAYING'}]<br>`; total += (data.jumlah || 0); });
     betListDiv.innerHTML = html; totalSpan.textContent = "Rp " + total.toLocaleString(); globalTotalBetRonde = total;
 });
-db.collection("game_room").doc("settings").onSnapshot((doc) => { if(doc.exists) activeMode = doc.data().mode || "MANUAL"; document.getElementById("sysMode").value = activeMode; });
-function gantiModeSistem() { const pihanMode = document.getElementById("sysMode").value; clearInterval(localLoop); db.collection("game_room").doc("settings").update({ mode: pihanMode }); manualReset(); }
 
-db.collection("game_room").doc("spaceman_pola").onSnapshot((doc) => {
-    if(doc.exists) {
-        const data = doc.data(); polaDaftar = data.daftar || []; indeksPolaSekarang = data.indeks || 0;
-        if(polaDaftar.length > 0 && indeksPolaSekarang < polaDaftar.length) {
-            document.getElementById("infoPolaAktif").textContent = `Status Pola: AKTIF (Putaran ke-${indeksPolaSekarang+1}, Target: ${polaDaftar[indeksPolaSekarang]}x)`;
-            document.getElementById("infoPolaAktif").style.color = "#22c55e";
-        } else {
-            document.getElementById("infoPolaAktif").textContent = `Status Pola: Selesai / Non-Aktif (Kembali ke Normal)`;
-            document.getElementById("infoPolaAktif").style.color = "#ef4444";
-        }
-    }
+db.collection("game_history").orderBy("waktu", "desc").limit(5).onSnapshot((snapshot) => {
+    const bar = document.getElementById("historyBarAdmin"); if(snapshot.empty) return; let html = "";
+    snapshot.forEach((doc) => {
+        const val = doc.data().multiplier || 1.00; const warna = val >= 1.50 ? "badge-green" : "badge-red";
+        html += `<span class="hist-badge ${warna}">${val.toFixed(2)}x</span> `;
+    });
+    bar.innerHTML = html;
 });
 
-async function kunciPola10Putaran() {
-    let arr = []; for(let i=1; i<=10; i++) { let val = parseFloat(document.getElementById("p"+i).value); if(isNaN(val) || val <= 0) val = 0; arr.push(val); }
-    let polaValid = arr.filter(v => v > 0); if(polaValid.length === 0) return alert("Masukkan minimal satu target pengali putaran!");
-    await db.collection("game_room").doc("spaceman_pola").set({ daftar: polaValid, indeks: 0 }); alert("📋 Sukses Mengunci Pola Putaran Spaceman!");
-}
+db.collection("game_room").doc("settings").onSnapshot((doc) => {
+    if(doc.exists) { activeMode = doc.data().mode || "MANUAL"; document.getElementById("sysMode").value = activeMode; tampilkanTombolSesuaiMode(); }
+});
+
+function gantiModeSistem() { const pihanMode = document.getElementById("sysMode").value; clearInterval(localLoop); db.collection("game_room").doc("settings").update({ mode: pihanMode }); manualReset(); }
+function tampilkanTombolSesuaiMode() { if (activeMode === "OTOMATIS") { document.getElementById("manualControls").style.display = "none"; document.getElementById("autoControls").style.display = "block"; } else { document.getElementById("manualControls").style.display = "block"; document.getElementById("autoControls").style.display = "none"; } }
 
 db.collection("game_room").doc("live_match").onSnapshot((doc) => {
     if (!doc.exists) return; const data = doc.data(); currentStatus = data.status || "WAITING";
     document.getElementById('adminLiveMult').textContent = (data.currentMultiplier || 1.00).toFixed(2) + "x";
-    document.getElementById('statusMulai').textContent = "Status: " + currentStatus;
+    if (currentStatus === "COUNTDOWN") { document.getElementById('statusMulai').textContent = `🚨 HITUNG MUNDUR: ${data.countdown}s`; document.getElementById('statusMulai').style.color = "#facc15"; }
+    else if (currentStatus === "TERBANG") { document.getElementById('statusMulai').textContent = "🚀 ROKET TERBANG..."; document.getElementById('statusMulai').style.color = "#22d3ee"; }
+    else if (currentStatus === "CRASH") { document.getElementById('statusMulai').textContent = "💥 CRASHED!"; document.getElementById('statusMulai').style.color = "#ef4444"; }
+    else { document.getElementById('statusMulai').textContent = "⏱️ STATUS: WAITING"; document.getElementById('statusMulai').style.color = "#facc15"; }
 });
+
 async function bersihkanTaruhanLama() { const snapshot = await db.collection("live_bets").get(); const batch = db.batch(); snapshot.docs.forEach((doc) => batch.delete(doc.ref)); await batch.commit(); }
-function setInstantCrashNextRound() { isInstantCrashSetup = true; alert("🚨 Instant Crash Diaktifkan!"); }
+function setInstantCrashNextRound() { isInstantCrashSetup = true; document.getElementById("statusInstantCrash").textContent = "Status: 🔥 INSTANT CRASH AKTIF RONDE INI!"; alert("🚨 Sukses!"); }
 async function simpanKeHistory(finalMult) { await db.collection("game_history").add({ multiplier: finalMult, waktu: firebase.firestore.FieldValue.serverTimestamp() }); }
 
-// LOOP AUTOPILOT
+// AUTOMATIC ENGINE WITH PROTEKSI TOTAL BET OVERFLOW (ZONK)
 setInterval(async () => {
     if (activeMode === "OTOMATIS" && currentStatus === "WAITING") {
         await bersihkanTaruhanLama(); let cd = 5;
         await db.collection("game_room").doc("live_match").set({ status: "COUNTDOWN", countdown: cd, currentMultiplier: 1.00 });
+        
         let cdInterval = setInterval(async () => {
             cd--;
             if(cd <= 0) {
-                clearInterval(cdInterval); let targetCrash = 1.00;
-                if (isInstantCrashSetup) { targetCrash = 1.00; isInstantCrashSetup = false; } 
-                else if (polaDaftar.length > 0 && indeksPolaSekarang < polaDaftar.length) {
-                    targetCrash = polaDaftar[indeksPolaSekarang]; let nextIdx = indeksPolaSekarang + 1;
-                    if(nextIdx >= polaDaftar.length) { await db.collection("game_room").doc("spaceman_pola").set({ daftar: [], indeks: 0 }); } 
-                    else { await db.collection("game_room").doc("spaceman_pola").update({ indeks: nextIdx }); }
-                } else if (globalTotalBetRonde >= globalMaxBetLimit) { targetCrash = parseFloat((Math.random() * (1.12 - 1.01) + 1.01).toFixed(2)); } 
-                else { targetCrash = parseFloat((Math.random() * (3.50 - 1.15) + 1.15).toFixed(2)); }
+                clearInterval(cdInterval);
+                let targetCrash = 1.00;
+                
+                if (isInstantCrashSetup) {
+                    targetCrash = 1.00; isInstantCrashSetup = false;
+                    document.getElementById("statusInstantCrash").textContent = "Status Pengaman: NORMAL";
+                } else if (globalTotalBetRonde >= globalMaxBetLimit) {
+                    targetCrash = parseFloat((Math.random() * (1.12 - 1.01) + 1.01).toFixed(2));
+                } else {
+                    targetCrash = parseFloat((Math.random() * (3.50 - 1.15) + 1.15).toFixed(2));
+                }
 
-                let mult = 1.00; await db.collection("game_room").doc("live_match").set({ status: "TERBANG", currentMultiplier: mult });
+                let mult = 1.00;
+                await db.collection("game_room").doc("live_match").set({ status: "TERBANG", currentMultiplier: mult });
                 clearInterval(localLoop);
+                
                 if (targetCrash <= 1.01) {
-                    await db.collection("game_room").doc("live_match").update({ status: "CRASH", currentMultiplier: 1.00 }); await simpanKeHistory(1.00);
+                    await db.collection("game_room").doc("live_match").update({ status: "CRASH", currentMultiplier: 1.00 });
+                    await simpanKeHistory(1.00);
                     setTimeout(async () => { if(activeMode === "OTOMATIS") manualReset(); }, 4000);
                 } else {
                     localLoop = setInterval(async () => {
                         mult += 0.04;
                         if (mult >= targetCrash) {
-                            clearInterval(localLoop); await db.collection("game_room").doc("live_match").update({ status: "CRASH", currentMultiplier: parseFloat(targetCrash) });
-                            await simpanKeHistory(parseFloat(targetCrash)); setTimeout(async () => { if(activeMode === "OTOMATIS") manualReset(); }, 4000);
+                            clearInterval(localLoop);
+                            await db.collection("game_room").doc("live_match").update({ status: "CRASH", currentMultiplier: parseFloat(targetCrash) });
+                            await simpanKeHistory(parseFloat(targetCrash));
+                            setTimeout(async () => { if(activeMode === "OTOMATIS") manualReset(); }, 4000);
                         } else { await db.collection("game_room").doc("live_match").update({ currentMultiplier: mult }); }
                     }, 100);
                 }
@@ -249,90 +227,47 @@ setInterval(async () => {
     }
 }, 8000);
 
-// START MANUAL
 async function mulaiCountdownManual() {
     if (currentStatus !== "WAITING") return;
     clearInterval(localLoop); await bersihkanTaruhanLama(); let cd = 5;
     db.collection("game_room").doc("live_match").set({ status: "COUNTDOWN", countdown: cd, currentMultiplier: 1.00 });
-    localLoop = setInterval(async () => {
+    
+    localLoop = setInterval(() => {
         cd--;
         if (cd <= 0) {
-            clearInterval(localLoop); let targetCrash = 1.00;
-            if (isInstantCrashSetup) { isInstantCrashSetup = false; targetCrash = 1.00; } 
-            else if (polaDaftar.length > 0 && indeksPolaSekarang < polaDaftar.length) {
-                targetCrash = polaDaftar[indeksPolaSekarang]; let nextIdx = indeksPolaSekarang + 1;
-                if(nextIdx >= polaDaftar.length) { await db.collection("game_room").doc("spaceman_pola").set({ daftar: [], indeks: 0 }); } 
-                else { await db.collection("game_room").doc("spaceman_pola").update({ indeks: nextIdx }); }
-            } else if (globalTotalBetRonde >= globalMaxBetLimit) { targetCrash = 1.02; } 
-            else { targetCrash = parseFloat((Math.random() * (4.00 - 1.20) + 1.20).toFixed(2)); }
-
-            if(targetCrash <= 1.01) {
-                db.collection("game_room").doc("live_match").set({ status: "CRASH", currentMultiplier: 1.00 }); simpanKeHistory(1.00);
+            clearInterval(localLoop);
+            if (isInstantCrashSetup || globalTotalBetRonde >= globalMaxBetLimit) {
+                isInstantCrashSetup = false; document.getElementById("statusInstantCrash").textContent = "Status Pengaman: NORMAL";
+                db.collection("game_room").doc("live_match").set({ status: "CRASH", currentMultiplier: 1.00 });
+                simpanKeHistory(1.00);
             } else {
-                let currentMult = 1.00; db.collection("game_room").doc("live_match").set({ status: "TERBANG", currentMultiplier: currentMult });
-                localLoop = setInterval(() => { 
-                    currentMult += 0.04; 
-                    if(currentMult >= targetCrash) {
-                        clearInterval(localLoop); db.collection("game_room").doc("live_match").update({ status: "CRASH", currentMultiplier: targetCrash }); simpanKeHistory(targetCrash);
-                    } else { db.collection("game_room").doc("live_match").update({ currentMultiplier: currentMult }); }
-                }, 100);
+                currentMult = 1.00; db.collection("game_room").doc("live_match").set({ status: "TERBANG", currentMultiplier: currentMult });
+                localLoop = setInterval(() => { currentMult += 0.04; db.collection("game_room").doc("live_match").update({ currentMultiplier: currentMult }); }, 100);
             }
         } else { db.collection("game_room").doc("live_match").update({ countdown: cd }); }
     }, 1000);
 }
+
 async function manualCrash() { clearInterval(localLoop); const liveMultText = parseFloat(document.getElementById('adminLiveMult').textContent); db.collection("game_room").doc("live_match").update({ status: "CRASH" }); await simpanKeHistory(liveMultText); }
-
-// LOGIKA RESET KE 1.00 KEMBALI NORMAL
-async function manualReset() { 
-    clearInterval(localLoop); 
-    await bersihkanTaruhanLama(); 
-    await db.collection("game_room").doc("live_match").set({ status: "WAITING", currentMultiplier: 1.00, countdown: 0 }); 
-}
-
-db.collection("game_room").doc("mahjong_settings").onSnapshot((doc) => { if(doc.exists) { document.getElementById("mahjongModeSelect").value = doc.data().mode || "NORMAL"; } });
-async function setelSetinganMahjong() { const pilihan = document.getElementById("mahjongModeSelect").value; await db.collection("game_room").doc("mahjong_settings").update({ mode: pilihan }); alert("Saved Global Mode!"); }
-db.collection("mahjong_bets").orderBy("waktu", "desc").limit(5).onSnapshot((snapshot) => { const div = document.getElementById("listTaruhanMahjong"); if(snapshot.empty) return; let html = ""; snapshot.forEach((doc) => { const d = doc.data(); html += `🔹 <b>${d.username}</b>: Spin Rp ${d.jumlah.toLocaleString()}<br>`; }); div.innerHTML = html; });
-
-async function simpanCheatNominalMahjong() {
-    const targetUser = document.getElementById("cheatUserTarget").value.trim().toLowerCase(); const targetNominal = parseInt(document.getElementById("cheatTargetNominal").value);
-    if(!targetUser || isNaN(targetNominal)) return alert("Lengkapi data target cheat!");
-    await db.collection("users").doc(targetUser).update({ mahjongTargetWin: targetNominal });
-    alert(`🎯 Sukses mengunci target nominal pecah Rp ${targetNominal.toLocaleString()} untuk user ${targetUser}!`);
-    document.getElementById("cheatUserTarget").value = ""; document.getElementById("cheatTargetNominal").value = "";
-}
-
-let selectedUserRoom = ""; let unsubscribePrivateChat = null;
-db.collection("chat_tickets").orderBy("waktu", "desc").onSnapshot((snapshot) => {
-    const listDiv = document.getElementById("listTiketChat"); if(snapshot.empty) { listDiv.innerHTML = "Tidak ada chat."; return; }
-    let html = ""; snapshot.forEach((doc) => { const t = doc.data(); html += `<div class="ticket-item" onclick="pilihRoomChat('${t.username}')">👤 <b>${t.username}</b><br><span style='color:#cbd5e1; font-size:10px;'>Pesan: ${t.pesanTerakhir}</span></div>`; });
-    listDiv.innerHTML = html;
-});
-function pilihRoomChat(username) {
-    selectedUserRoom = username; document.getElementById("lblRoomAktif").textContent = username;
-    if(unsubscribePrivateChat) unsubscribePrivateChat();
-    unsubscribePrivateChat = db.collection("private_chats").where("room", "==", username).orderBy("waktu", "asc").onSnapshot((snapshot) => {
-        const box = document.getElementById("boxIsiChatPrivate"); let html = ""; if(snapshot.empty) { box.innerHTML = "Kosong."; return; }
-        snapshot.forEach((doc) => { const d = doc.data(); let color = d.pengirim === "ADMIN" ? "#facc15" : "#38bdf8"; html += `<div><b style='color:${color};'>[${d.pengirim}]:</b> ${d.text}</div>`; });
-        box.innerHTML = html; box.scrollTop = box.scrollHeight;
-    });
-}
-async function kirimBalasanPrivate() {
-    const text = document.getElementById("txtBalasPrivate").value.trim(); if(!text || !selectedUserRoom) return alert("Pilih tiket & isi balasan!");
-    document.getElementById("txtBalasPrivate").value = "";
-    await db.collection("private_chats").add({ room: selectedUserRoom, pengirim: "ADMIN", text: text, waktu: firebase.firestore.FieldValue.serverTimestamp() });
+async function manualReset() { clearInterval(localLoop); await bersihkanTaruhanLama(); db.collection("game_room").doc("live_match").set({ status: "WAITING", currentMultiplier: 1.00, countdown: 0 }); }
+async function addSaldo() {
+    const user = document.getElementById('targetUser').value.trim().toLowerCase(); const amount = parseInt(document.getElementById('addAmount').value);
+    if (!user || !amount) return alert("Isi data!");
+    await db.collection("users").doc(user).set({saldo: firebase.firestore.FieldValue.increment(amount)}, {merge: true});
+    alert(`✅ Berhasil!`);
 }
 
 db.collection("withdraw_requests").where("status", "==", "PENDING").onSnapshot((snapshot) => {
-    const wdListDiv = document.getElementById("wdList"); if (snapshot.empty) { wdListDiv.innerHTML = "<p>Antrian kosong.</p>"; return; }
-    let html = ""; snapshot.forEach((doc) => {
+    const wdListDiv = document.getElementById("wdList"); if (snapshot.empty) { wdListDiv.innerHTML = "<p style='color:#64748b;'>Belum ada WD aktif.</p>"; return; } let html = "";
+    snapshot.forEach((doc) => {
         const data = doc.data();
-        html += `<div class="wd-box">👤 <b>${data.username}</b> | 💰 <b>Rp ${data.jumlah.toLocaleString()}</b><br>🏦 ${data.tujuan} (${data.rekening})<br><button class="btn-green" style="width:45%; padding:4px;" onclick="prosesWD('${doc.id}', '${data.username}', ${data.jumlah}, 'YA')">SETUJU</button><button class="btn-red" style="width:45%; padding:4px;" onclick="prosesWD('${doc.id}', '${data.username}', ${data.jumlah}, 'TIDAK')">TOLAK</button></div>`;
+        html += `<div class="wd-box">📌 <b>User:</b> ${data.username}<br>💰 <b>Jumlah:</b> Rp ${data.jumlah.toLocaleString()}<br>🏦 <b>Tujuan:</b> ${data.tujuan}<br>💳 <b>No Rek:</b> ${data.rekening}<br><button class="btn-green" style="padding:5px; font-size:10px;" onclick="prosesWD('${doc.id}', '${data.username}', ${data.jumlah}, 'YA')">YA</button><button class="btn-red" style="padding:5px; font-size:10px;" onclick="prosesWD('${doc.id}', '${data.username}', ${data.jumlah}, 'TIDAK')">TIDAK</button></div>`;
     });
     wdListDiv.innerHTML = html;
 });
 async function prosesWD(requestId, username, jumlah, keputusan) {
-    if (keputusan === "YA") { await db.collection("withdraw_requests").doc(requestId).update({ status: "BERHASIL" }); alert("Disetujui!"); } 
-    else { await db.collection("users").doc(username).update({ saldo: firebase.firestore.FieldValue.increment(jumlah) }); await db.collection("withdraw_requests").doc(requestId).update({ status: "DITOLAK" }); alert("DITOLAK!"); }
+    if (keputusan === "YA") { await db.collection("withdraw_requests").doc(requestId).update({ status: "BERHASIL" }); alert("WD Disetujui!"); } 
+    else { await db.collection("users").doc(username).update({ saldo: firebase.firestore.FieldValue.increment(jumlah) }); await db.collection("withdraw_requests").doc(requestId).update({ status: "DITOLAK" }); alert("WD Ditolak!"); }
 }
 </script>
 </body>
