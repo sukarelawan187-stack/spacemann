@@ -2,22 +2,36 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>LOGIN PORTAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL GAME OFFICIAL</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background: #0a0a1f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #1a1a2e; padding: 20px; border-radius: 15px; border: 2px solid #22d3ee; width: 300px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        button { width: 95%; padding: 10px; background: #22d3ee; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        body { background: #040d1a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: #0b192e; padding: 25px; border-radius: 20px; border: 2px solid #facc15; width: 320px; text-align: center; box-shadow: 0 0 20px rgba(250, 202, 21, 0.2); }
+        h1 { color: #facc15; font-size: 24px; margin-bottom: 5px; }
+        p { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; text-align: center; }
+        button { width: 95%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-login { background: #facc15; color: black; }
+        .btn-reg { background: #22d3ee; color: black; }
+        .chat-admin { margin-top: 20px; font-size: 11px; color: #22c55e; border-top: 1px solid #334155; padding-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h2>LOGIN PLAYER</h2>
+    <h1>🚀 PORTAL GAME</h1>
+    <p>Silakan Login atau Daftar Akun Baru</p>
+    
     <input type="text" id="username" placeholder="Masukkan Username...">
-    <button onclick="login()">MASUK KE GAME</button>
+    <button class="btn-login" onclick="login()">LOGIN SEKARANG</button>
+    <button class="btn-reg" onclick="register()">DAFTAR AKUN BARU</button>
+
+    <div class="chat-admin">
+        <p>Butuh bantuan? Chat Admin di bawah:</p>
+        <button style="background:transparent; border:1px solid #22c55e; color:#22c55e;" onclick="window.open('https://wa.me/6281234567890')">💬 CHAT ADMIN (WA)</button>
+    </div>
 </div>
 
 <script>
@@ -34,16 +48,25 @@ const db = firebase.firestore();
 
 function login() {
     const user = document.getElementById("username").value.trim();
-    if(!user) return alert("Masukkan username!");
-
-    // Cek apakah user ada di database
+    if(!user) return alert("Isi username dulu!");
     db.collection("users").doc(user).get().then((doc) => {
         if(doc.exists) {
             localStorage.setItem("game_user", user);
-            window.location.href = "index.html"; // Arahkan ke halaman utama/menu game
+            window.location.href = "index.html"; 
         } else {
-            alert("Username tidak terdaftar!");
+            alert("Username tidak ditemukan! Silakan daftar dulu.");
         }
+    });
+}
+
+function register() {
+    const user = document.getElementById("username").value.trim();
+    if(!user) return alert("Isi username untuk daftar!");
+    db.collection("users").doc(user).set({
+        saldo: 100000, // Bonus saldo awal 100rb
+        isBanned: false
+    }).then(() => {
+        alert("Pendaftaran berhasil! Silakan Login.");
     });
 }
 </script>
